@@ -1,0 +1,26 @@
+{
+    "as1":{
+        "protocole":"OSPF",
+        "routeurs": {
+            "noeud1": ["switch1","noeud4","noeud5"],
+            "noeud2": ["switch1"],
+            "noeud3":["switch1"],
+            "noeud4": ["noeud1"]
+        },
+        "switches":{
+            "switch1":["noeud1","noeud2","noeud3"]
+        }
+
+
+    },
+    "as2":{
+        "protocole": "RIP",
+        "routeurs":{
+            "noeud5":["noeud1","noeud6"],
+            "noeud6":["noeud5"]
+        }
+    }
+
+
+
+}
