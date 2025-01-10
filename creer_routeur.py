@@ -30,3 +30,18 @@ def coordonnees_routeur_aleatories():
     """renvoie un couple x,y aléatoire"""
     return randint(1,1000),randint(1,1000)
 
+
+def creer_routeurs(graphe,config_noeuds,template_id):
+    """à utiliser après avoir déjà initialisé config_noeuds
+    crée des routeurs avec des emplacements aléatoires en fonction de la config
+    
+    
+    """
+    for ass in graphe.keys():
+        for routeur in graphe[ass]["routeurs"].keys():
+            x,y=coordonnees_routeur_aleatories()
+            config_noeuds[routeur]["json_gns3"]=create_router(routeur,template_id,x,y)
+
+
+        pass
+    pass
