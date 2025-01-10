@@ -1,0 +1,14 @@
+{
+    "noeud1":{
+        "ip_et_co":{
+            "noeud2":"2001:numas:1::4/64",
+            "noeud3":"2001:numas:2::4/64"
+        },
+        "protocole":"OSPF",
+        "router_id": "1.1.1.1"
+    },
+    "noeud2":{
+
+    }
+
+}
