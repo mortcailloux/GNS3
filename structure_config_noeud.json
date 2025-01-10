@@ -5,7 +5,8 @@
             "noeud3":"2001:numas:2::4/64"
         },
         "protocole":"OSPF",
-        "router_id": "1.1.1.1"
+        "router_id": "1.1.1.1",
+        "json_gns3":{}
     },
     "noeud2":{
 
