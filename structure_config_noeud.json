@@ -1,0 +1,23 @@
+{
+    "noeud1":{
+        "ip_et_co":{
+            "noeud2":"2001:numas:1::4/64",
+            "noeud3":"2001:numas:2::4/64"
+        },
+        "protocole":"OSPF",
+        "router_id": "1.1.1.1",
+        "json_gns3":{
+            "node_id": "abcd1234",
+            "name": "Router1",
+            "status": "stopped",
+            "console": 5000, //port sur lequel on accède au routeur
+            "x": 100,
+            "y": 100
+            
+          }
+    },
+    "noeud2":{
+
+    }
+
+}

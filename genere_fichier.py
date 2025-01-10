@@ -2,6 +2,8 @@ import datetime
 import json
 from random import randint
 
+#ces fonctions ne servent plus à rien car j'ai appris qu'il ne fallait pas créer un réseau
+
 def demande_protocole():
     text=""
     while text!="OSPF" and text!="RIP":
@@ -50,11 +52,13 @@ def genere_dic(nb_as):
                 for k in range(randint(2,19)): #max 20 connexion sur un switch, min 2 sinon aucun intérêt d'avoir un switch
                     routeur=f"noeud{randint(1,nb_routeurs)}"
                     if routeur not in deja_co:
-                        deja_co.add(routeur)
-                        dic[i]["switches"][f"switch{j+1}"].append(routeur)
-                        if routeur not in dic[i]["routeurs"].keys():
-                            dic[i]["routeurs"][routeur]=[]
-                        dic[i]["routeurs"][routeur].append(switch)
+                        if not (routeur in dic[i]["routeurs"].keys() and len(dic[i]["routeur"][routeur]))<=4: #il faut vérifier qu'on ne connecte pas un routeur à plus de routeurs qu'il n'a de port,4 port en GNS3
+                            #j'ai simplifié l'expression booléenne ci-dessus en utilisant la loi de Morgan
+                            deja_co.add(routeur)
+                            dic[i]["switches"][f"switch{j+1}"].append(routeur)
+                            if routeur not in dic[i]["routeurs"].keys():
+                                dic[i]["routeurs"][routeur]=[]
+                            dic[i]["routeurs"][routeur].append(switch)
             
         for j in range(num_dernier_routeur, num_dernier_routeur + nb_routeurs):
             routeur=f"noeud{j+1}"
@@ -83,5 +87,7 @@ def genere_json():
     with open ("gns/exemple.json","w") as fichier:
         json.dump(dic,fichier)
                 
+
+
 
 genere_json()
