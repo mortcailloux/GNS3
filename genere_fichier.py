@@ -26,7 +26,9 @@ def demande_presence_switch():
 
 
 def genere_dic(nb_as):
+    """genere un dictionnaire qui sera exporte en json, le dictionnaire correspond au fichier exemple_desc_reseau"""
     dic={}
+    num_dernier_routeur=0
     for i in range(1,nb_as+1):
         dic[i]={}
         aretes=set()
@@ -54,7 +56,7 @@ def genere_dic(nb_as):
                             dic[i]["routeurs"][routeur]=[]
                         dic[i]["routeurs"][routeur].append(switch)
             
-        for j in range(nb_routeurs):
+        for j in range(num_dernier_routeur, num_dernier_routeur + nb_routeurs):
             routeur=f"noeud{j+1}"
                 
             if routeur not in dic[i]["routeurs"].keys():
@@ -70,11 +72,12 @@ def genere_dic(nb_as):
             if (routeur,routeur2) not in aretes and (routeur2,routeur) not in aretes: # si on n'a pas déjà fait l'arête
                 dic[i]["routeurs"][routeur].append(routeur2)
                 dic[i]["routeurs"][routeur2].append(routeur) 
-
+        num_dernier_routeur=j
     return dic
 
 
 def genere_json():
+    """génère un json conformément au exemple_desc_reseau.json pour pouvoir tester différents réseaux de façon simple"""
     nb_as=int(input("Combien voulez-vous d'AS (attention après il faut redonner le nombre de routeur et de switch à chaque AS)"))
     dic=genere_dic(nb_as)
     with open ("gns/exemple.json","w") as fichier:
