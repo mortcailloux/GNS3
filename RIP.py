@@ -16,4 +16,12 @@ def config_ripng(routeur, voisins):
 
 	print(f"configuration pour le routeur {routeur}")
 
-	input("souhaites-tu connaître")
+	# request = input("souhaites-tu connaître tes voisins rip ? yes / no")
+	# if request == "yes":
+	# 	try:
+	# 		# Exécuter la commande "show ipv6 rip route"
+	# 		output = connexion.send_command("show ipv6 rip route")
+	# 		print(f"\nVoisins RIP pour {routeur} détectés via 'show ipv6 rip route' :\n")
+	# 		print(output)  # Afficher la sortie brute pour l'instant
+	# 	except Exception as e:
+	# 		print(f"Erreur lors de l'exécution de la commande sur {routeur} : {e}")
