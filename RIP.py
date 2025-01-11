@@ -16,6 +16,7 @@ def config_ripng(routeur, voisins):
 
 	print(f"configuration pour le routeur {routeur}")
 
+	
 	# request = input("souhaites-tu connaître tes voisins rip ? yes / no")
 	# if request == "yes":
 	# 	try:
@@ -25,3 +26,5 @@ def config_ripng(routeur, voisins):
 	# 		print(output)  # Afficher la sortie brute pour l'instant
 	# 	except Exception as e:
 	# 		print(f"Erreur lors de l'exécution de la commande sur {routeur} : {e}")
+
+	return commandes
