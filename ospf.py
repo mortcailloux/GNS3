@@ -18,7 +18,7 @@ def config_ospf(router_id, process_id, neighbor_list):
     commands.append("exit")
 
     # Generate interface-specific OSPF commands for neighbor_list
-    for i, neighbor in enumerate(neighbor_list):
+    for i in range(len(neighbor_list)):
         if i == 0:
             interface_name = "FastEthernet 0/0"
             commands.append(f"interface {interface_name}")
@@ -31,7 +31,4 @@ def config_ospf(router_id, process_id, neighbor_list):
             commands.append("exit")
 
     return commands
-
-
-
 
