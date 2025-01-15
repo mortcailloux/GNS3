@@ -19,9 +19,9 @@ def config_ospf(router_id, process_id, neighbor_list):
 
     # Generate interface-specific OSPF commands for neighbor_list
     for i, neighbor in enumerate(neighbor_list):
-    interface_name = f"FastEthernet {2*i}/0"
-    commands.append(f"interface {interface_name}")
-    commands.append(f"ipv6 ospf {process_id} area 0")
+        interface_name = f"FastEthernet {2*i}/0"
+        commands.append(f"interface {interface_name}")
+        commands.append(f"ipv6 ospf {process_id} area 0")
 
     return commands
 
