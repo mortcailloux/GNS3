@@ -25,7 +25,7 @@ def demande_presence_switch():
         text=text.lower().strip()
     return text=="oui"
 
-
+#ne fonctionne plus avec les switchs
 
 def genere_dic(nb_as):
     """genere un dictionnaire qui sera exporte en json, le dictionnaire correspond au fichier exemple_desc_reseau"""
@@ -41,6 +41,7 @@ def genere_dic(nb_as):
         dic[i]["routeurs"]={}
         dic[i]["switches"]={}
         nb_routeurs=demande_nb_routeurs()
+        """
         switch_present=demande_presence_switch()
         if switch_present:
             nb_switch=randint(1,5) 
@@ -59,7 +60,7 @@ def genere_dic(nb_as):
                             if routeur not in dic[i]["routeurs"].keys():
                                 dic[i]["routeurs"][routeur]=[]
                             dic[i]["routeurs"][routeur].append(switch)
-            
+        """
         for j in range(num_dernier_routeur, num_dernier_routeur + nb_routeurs):
             routeur=f"noeud{j+1}"
                 
@@ -72,10 +73,14 @@ def genere_dic(nb_as):
                 nb_alea=randint(1,nb_routeurs) #on ne veut pas être connecté à soi-même
             routeur2=f"noeud{nb_alea}"
             if routeur2 not in dic[i]["routeurs"].keys():
-                dic[i]["routeurs"][routeur2]=[]
+                dic[i]["routeurs"][routeur2]={}
             if (routeur,routeur2) not in aretes and (routeur2,routeur) not in aretes: # si on n'a pas déjà fait l'arête
-                dic[i]["routeurs"][routeur].append(routeur2)
-                dic[i]["routeurs"][routeur2].append(routeur) 
+                if j==0:
+                    interface='FastEthernet0/0'
+                else:
+                    interface=f"GigabitEthernet{j-1}/0"
+                dic[i]["routeurs"][routeur][interface]=routeur2
+                dic[i]["routeurs"][routeur2][interface]=routeur 
         num_dernier_routeur=j
     return dic
 

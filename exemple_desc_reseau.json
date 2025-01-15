@@ -2,11 +2,12 @@
     "as1":{
         "protocole":"OSPF",
         "routeurs": {
-            "noeud1": ["switch1","noeud4","noeud5"],
-            "noeud2": ["switch1"],
-            "noeud3":["switch1"],
-            "noeud4": ["noeud1"]
+            "noeud1": {"Fast_Ethernet0/0":["switch1",0 /*coût*/],"Gigabit_Ethernet0/0":"noeud4","Gigabit_Ethernet1/0":"noeud5"},
+            "noeud2": {"Fast_Ethernet0/0":"switch1"},
+            "noeud3":{"Fast_Ethernet0/0":"switch1"},
+            "noeud4": {"Fast_Ethernet0/0":"noeud1"}
         },
+        
         "switches":{
             "switch1":["noeud1","noeud2","noeud3"]
         }

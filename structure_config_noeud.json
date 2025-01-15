@@ -1,8 +1,8 @@
 {
     "noeud1":{
         "ip_et_co":{
-            "noeud2":"2001:numas:1::4/64",
-            "noeud3":"2001:numas:2::4/64"
+            "noeud2":["interface","2001:numas:1::4/64"],
+            "noeud3":["interface","2001:numas:2::4/64"]
         },
         "protocole":"OSPF",
         "router_id": "1.1.1.1",
@@ -14,7 +14,8 @@
             "x": 100,
             "y": 100
             
-          }
+          },
+        "commandes":["commande1","commande2","..."]
     },
     "noeud2":{
 

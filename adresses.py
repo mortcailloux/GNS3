@@ -15,7 +15,8 @@ def attribue_ip(graphe,config_noeux):
     for ass in graphe.keys():
         for routeur in graphe[ass]["routeurs"]:
             
-            for connexion in graphe[ass]["routeurs"][routeur]:
+            for interface,connexion in graphe[ass]["routeurs"][routeur].items():
+                connexion=connexion[0] #on n'a pas besoin d'utiliser le coût
                 if (connexion,routeur) not in reseaux.keys():
                     if "switch" in connexion:
                         nbrouteur= len(graphe[ass]["switches"][connexion])+1
@@ -25,7 +26,7 @@ def attribue_ip(graphe,config_noeux):
                             config_noeux[routeur]["ip_et_co"]={}
                             
                             config_noeux[routeur]["protocole"]=graphe[ass]["protocole"]
-                        config_noeux[routeur]["ip_et_co"][connexion]=ips.pop() #l'ip de l'interface du routeur routeur vers le routeur connexion est la dernère de la liste
+                        config_noeux[routeur]["ip_et_co"][connexion]=[interface,ips.pop()] #l'ip de l'interface du routeur routeur vers le routeur connexion est la dernère de la liste
                         #s'il y a un switch il y a plus de deux routeurs sur le réseau
                         for lien in graphe[ass]["switches"]:
                             reseaux[(connexion,routeur)]=[num_reseau,ips]
@@ -60,5 +61,21 @@ def main():
     #le graphe est le dico obtenu à partir du json
     config_noeux=attribue_ip(graphe,config_noeux)
     print(config_noeux)
+
+def genere_commandes_ip(config_noeuds,noeud):
+    """génère les commandes pour configurer les addresses ip"""
+    commande=["configure terminal"]
+    for interface,ip in config_noeuds[noeud]["ip_et_co"].values():
+        commande.append(f"interface {interface}")
+        commande.append('ipv6 enable')
+        commande.append(f"ipv6 address {ip}")
+        commande.append("no shutdown")
+        commande.append("exit")
+
+    commande.append("exit")
+    
+
+
+
 main()
 
