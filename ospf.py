@@ -18,13 +18,17 @@ def config_ospf(router_id, process_id, neighbor_list):
     commands.append("exit")
 
     # Generate interface-specific OSPF commands for neighbor_list
-    for i, neighbor in enumerate(neighbor_list):
-    interface_name = f"FastEthernet {2*i}/0"
-    commands.append(f"interface {interface_name}")
-    commands.append(f"ipv6 ospf {process_id} area 0")
+    for i in range(len(neighbor_list)):
+        if i == 0:
+            interface_name = "FastEthernet 0/0"
+            commands.append(f"interface {interface_name}")
+            commands.append(f"ipv6 ospf {process_id} area 0")
+            commands.append("exit")
+        else:
+            interface_name = f"GigabitEthernet {i-1}/0"
+            commands.append(f"interface {interface_name}")
+            commands.append(f"ipv6 ospf {process_id} area 0")
+            commands.append("exit")
 
     return commands
-
-
-
 
