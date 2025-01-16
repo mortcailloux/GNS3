@@ -55,9 +55,9 @@ def trouve_port_telnet_routeur(routeur,project_gns3):
             print(node.__dict__)
             return node.console
 
-"""
-tests
-port=trouve_port_telnet_routeur("R5",project)
-print(port)
-configure_router_telnet("127.0.0.1",port,["configure terminal","interface FastEthernet0/0","ipv6 enable","ipv6 address 2001:156:45::/64","no shutdown", "exit", "exit"])
-"""
+if __name__=="__main__":
+    #tests
+    port=trouve_port_telnet_routeur("R5",project)
+    print(port)
+    configure_router_telnet("127.0.0.1",port,["configure terminal","interface FastEthernet0/0","ipv6 enable","ipv6 address 2001:156:45::/64","no shutdown", "exit", "exit"])
+    

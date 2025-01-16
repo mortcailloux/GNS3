@@ -42,7 +42,7 @@ def attribue_ip(graphe,config_noeux):
                         if "ip_et_co" not in config_noeux[routeur]:
                             config_noeux[routeur]["ip_et_co"]={}
                         
-                        config_noeux[routeur]["ip_et_co"][connexion]=ips.pop() #l'ip de l'interface du routeur routeur vers le routeur connexion est la dernère de la liste
+                        config_noeux[routeur]["ip_et_co"][connexion]=[interface,ips.pop()] #l'ip de l'interface du routeur routeur vers le routeur connexion est la dernère de la liste
                         reseaux[(connexion,routeur)]=[num_reseau,ips]
                         reseaux[(routeur,connexion)]=[num_reseau,ips]
                     num_reseau+=1

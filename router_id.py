@@ -4,7 +4,7 @@ def config_router_id(graphe,config_noeud):
 	
 	for AS in graphe.keys():
 		for noeud in (graphe[AS]["routeurs"]).keys():
-			num_id = noeud[-1] # recuperation du numero_id
+			num_id = noeud[1::] # recuperation du numero_id (on supprime le R)
 			int(num_id)
 			router_iden = f"{num_id}.{num_id}.{num_id}.{num_id}"
 			if noeud not in config_noeud.keys():
@@ -19,5 +19,5 @@ def test():
 		graphe=json.load(fichier)
 	config_noeud={}
 	print(config_router_id(graphe,config_noeud))
-
-test()
+if __name__=="__main__":
+	test()

@@ -62,7 +62,7 @@ def get_as_for_router(routeur, reseau_officiel):
 			return int(as_number)
 	return None  # Retourne None si le routeur n'est pas trouvé
 
-def bgp_voisins(routeur, reseau_officiel,routeur_iden,config_noeud):
+def config_bgp_routeur(routeur, reseau_officiel,routeur_iden,config_noeud):
     
     dico_voisins = config_noeud[routeur]["ip_et_co"]
     commandes = []
@@ -109,5 +109,6 @@ def test():
     # print(sameAS("R1","R4",reseau_officiel))
     print(config_bgp("R4","R8",reseau_officiel,"4.4.4.4","2001:168:192::2/64"))
 
-test()
+if __name__=="__main__":
+	test()
 

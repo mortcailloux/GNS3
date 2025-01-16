@@ -93,6 +93,6 @@ def genere_json():
         json.dump(dic,fichier)
                 
 
+if __name__=="__main__":
 
-
-genere_json()
+    genere_json()

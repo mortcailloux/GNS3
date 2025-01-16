@@ -19,7 +19,7 @@ def config_ripng(routeur,interface):
 		# 	interface = "FastEthernet0/0" 
 		# else:
 		# 	interface = f"GigabitEthernet{i}/0"
-def rip_voisins(routeur,reseau_officiel):
+def config_rip_routeur(routeur,reseau_officiel):
     dico_voisins = reseau_officiel["1"]["routeurs"][routeur]
     commandes = []
     for interface in dico_voisins.keys():
@@ -30,4 +30,6 @@ def test():
     with open("reseau_officiel.json") as fichier:
         reseau_officiel=json.load(fichier)
     print(rip_voisins("R3",reseau_officiel))
-test()
+
+if __name__=="__main__":
+    test()
