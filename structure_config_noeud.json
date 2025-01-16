@@ -15,7 +15,8 @@
             "y": 100
             
           },
-        "commandes":["commande1","commande2","..."]
+        "commandes":["commande1","commande2","..."],
+        "address_loop":"bl"
     },
     "noeud2":{
 

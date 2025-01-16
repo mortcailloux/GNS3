@@ -1,21 +1,22 @@
 import json
 import ipaddress
 
-def config_bgp(routeur,voisin,data,router_id,address_ipv6):
+def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6):
 	"""
 	router : string
 	voisin du routeur : string
-	data : dictionnaire contenant les infos json
+	reseau_officiel : dictionnaire contenant le reseau
+	config_noeud : dictionnaire contenant adresse, commandes et @loopback
 	router_id : X.X.X.X string
 	address_ipv6 : 2001:{numass}:{numreseau}::{i+1}/64 string
 	
 	"""
-	AS = get_as_for_router(routeur,data)
+	AS = get_as_for_router(routeur,reseau_officiel)
 	commandes = [f"router bgp {AS}", "no bgp default ipv4-unicast",f"bgp router-id {router_id}"]
-	voisin_as = get_as_for_router(voisin, data)
+	voisin_as = get_as_for_router(voisin, reseau_officiel)
 	print(voisin_as)
 	
-	if sameAS(routeur,voisin,data): #iBGP
+	if sameAS(routeur,voisin,reseau_officiel): #iBGP
 		commandes.append(f"neighbor {address_ipv6} remote-as {AS}")
 		
 	else: #eBGP
@@ -35,41 +36,78 @@ def config_bgp(routeur,voisin,data,router_id,address_ipv6):
 	return commandes
 		
 
-def sameAS(routeur1,routeur2,data):
+def sameAS(routeur1,routeur2,reseau_officiel):
 	"""
 	verifie si deux routeurs sont dans le meme AS
 	
 	return a boolean 
 			->True si meme AS
 	"""
-	as1 = get_as_for_router(routeur1,data)
-	as2 = get_as_for_router(routeur2,data)
+	as1 = get_as_for_router(routeur1,reseau_officiel)
+	as2 = get_as_for_router(routeur2,reseau_officiel)
 	return as1==as2
 
-def get_as_for_router(routeur, data):
-    """
-    Trouve le numéro d'AS pour un routeur donné en parcourant les données JSON
+def get_as_for_router(routeur, reseau_officiel):
+	"""
+	Trouve le numéro d'AS pour un routeur donné en parcourant les données JSON
+	
+	routeur : string
+	reseau_officiel : dict, données contenant les informations des AS et des routeurs
+	
+	Retourne :
+		int : numéro d'AS du routeur
+	"""
+	for as_number, as_data in reseau_officiel.items():
+		if routeur in as_data["routeurs"]:
+			return int(as_number)
+	return None  # Retourne None si le routeur n'est pas trouvé
+
+def bgp_voisins(routeur, reseau_officiel,routeur_iden,config_noeud):
     
-    routeur : string
-    data : dict, données contenant les informations des AS et des routeurs
-    
-    Retourne :
-        int : numéro d'AS du routeur
-    """
-    for as_number, as_data in data.items():
-        if routeur in as_data["routeurs"]:
-            return int(as_number)
-    return None  # Retourne None si le routeur n'est pas trouvé
+    dico_voisins = config_noeud[routeur]["ip_et_co"]
+    commandes = []
+    for voisin,liste in dico_voisins.items():
+        commandes.extend(config_bgp(routeur,voisin,reseau_officiel,routeur_iden, liste[1]))
+    return commandes
+############################
+##LOOPBACK functions#########
+
+
+def configure_loopback_address(index):
+	return f"2001:db8::{index}"
+
+def generer_loopback_commandes(routeur,protocol):
+	commandes = []
+	index = routeur[1:]
+	adresse_loopback = configure_loopback_address(index)
+	commandes.extend([
+					f"interface loopback0",
+					f" ipv6 address {adresse_loopback}/128",
+					f"no shutdown",
+					f" ipv6 enable",
+					"exit",
+					f"router {protocol}",
+					f" network {adresse_loopback}/128"
+				])
+	return commandes
+
+def spread_loopback_iBGP(commandes, voisin,routeur,reseau_officiel,router_id,address_ipv6,adresse_voisin):
+	if sameAS(routeur,voisin,reseau_officiel): #si c'est dans meme AS on spread @loopback
+		commandes.extend(config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6))
+		commandes.extend("configure terminal",f"router bgp {get_as_for_router(routeur)}",f"neighbor {adresse_voisin} update-source Loopback0")
+		return commandes
+	return None
 
 def test():
-	with open("GNS3/reseau_officiel.json") as fichier:
-		data=json.load(fichier)
-	#print("Numéros d'AS pour chaque routeur :")
-	# for as_number, as_data in data.items():
-	# 	for routeur in as_data["routeurs"]:
-	# 		as_num = get_as_for_router(routeur, data)
-	# 		print(f"{routeur}: AS {as_num}")
-	print(config_bgp("R4","R8",data,"4.4.4.4","2001:168:192::2/64"))
+    with open("reseau_officiel.json") as fichier:
+        reseau_officiel=json.load(fichier)
+    # print("Numéros d'AS pour chaque routeur :")
+    # for as_number, as_data in reseau_officiel.items():
+    #     for routeur in as_data["routeurs"]:
+    #         print(routeur+ ":" )
+    #         print(get_as_for_router(routeur,reseau_officiel))
+    # print(sameAS("R1","R4",reseau_officiel))
+    print(config_bgp("R4","R8",reseau_officiel,"4.4.4.4","2001:168:192::2/64"))
 
 test()
 

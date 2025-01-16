@@ -1,4 +1,5 @@
 import json
+import ipaddress
 
 # Charger le fichier de configuration du réseau
 with open('reseau_officiel.json', 'r') as file:
@@ -21,3 +22,29 @@ def generer_loopback_commandes(routeur,protocol):
                     f" network {adresse_loopback}/128"
                 ])
     return commandes
+
+def spread_loopback_iBGP(commandes, voisin,routeur,reseau_officiel,router_id,address_ipv6):
+    if sameAS(routeur,voisin,reseau_officiel): #si c'est dans meme AS on spread @loopback
+        commandes.extend([f"router bgp {AS}", "no bgp default ipv4-unicast",f"bgp router-id {router_id}",
+                          f"neighbor {address_ipv6} remote-as {AS}",f"address-family ipv6 unicast",f"neighbor {address_ipv6} activate"]) 
+            # Créer un objet IPv6Network
+        network = ipaddress.IPv6Network(address_ipv6, strict=False)
+
+        # Extraire l'adresse IPv6 et le préfixe
+        adresse_reseau = str(network.network_address)
+        prefixe = network.prefixlen
+        commandes.append(f"network {adresse_reseau}/{prefixe}")
+        commandes.append("end")
+        return commandes
+    else:
+        return None
+def sameAS(routeur1,routeur2,reseau_officiel):
+	"""
+	verifie si deux routeurs sont dans le meme AS
+	
+	return a boolean 
+			->True si meme AS
+	"""
+	as1 = get_as_for_router(routeur1,reseau_officiel)
+	as2 = get_as_for_router(routeur2,reseau_officiel)
+	return as1==as2
