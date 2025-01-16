@@ -43,17 +43,21 @@ project = Project(name=PROJECT_NAME, connector=connector)
 project.get()
 
 def recupérer_jsongns3_routeur(project_gns,config_noeuds):
+    """mets le json de gns3 dans la config des noeuds"""
     for routeur in project_gns.nodes:
         nom=routeur.name #normalement le nom est identique à un routeurs que l'on a déjà renseigné dans le dictionnaire
         config_noeuds[nom]["json_gns3"]=routeur
 
 def trouve_port_telnet_routeur(routeur,project_gns3):
+    """sert à trouver le port de connexion à telnet"""
     for node in project_gns3.nodes:
         if node.name==routeur:
             print(node.__dict__)
             return node.console
 
-
+"""
+tests
 port=trouve_port_telnet_routeur("R5",project)
 print(port)
 configure_router_telnet("127.0.0.1",port,["configure terminal","interface FastEthernet0/0","ipv6 enable","ipv6 address 2001:156:45::/64","no shutdown", "exit", "exit"])
+"""
