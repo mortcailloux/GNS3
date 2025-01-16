@@ -76,6 +76,7 @@ def genere_commandes_ip(config_noeuds,noeud):
         commande.append("exit")
 
     commande.append("exit")
+    return commande
     
 
 

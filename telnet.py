@@ -42,11 +42,12 @@ connector = Gns3Connector(GNS3_SERVER)
 project = Project(name=PROJECT_NAME, connector=connector)
 project.get()
 
-def recupérer_jsongns3_routeur(project_gns,config_noeuds):
+def recupérer_jsongns3_routeur(config_noeuds, project_gns=project):
     """mets le json de gns3 dans la config des noeuds"""
     for routeur in project_gns.nodes:
         nom=routeur.name #normalement le nom est identique à un routeurs que l'on a déjà renseigné dans le dictionnaire
-        config_noeuds[nom]["json_gns3"]=routeur
+        if "PC" not in nom and "Switch" not in nom:
+            config_noeuds[nom]["json_gns3"]=routeur
 
 def trouve_port_telnet_routeur(routeur,project_gns3):
     """sert à trouver le port de connexion à telnet"""

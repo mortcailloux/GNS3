@@ -32,7 +32,7 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6):
 	adresse_reseau = str(network.network_address)
 	prefixe = network.prefixlen
 	commandes.append(f"network {adresse_reseau}/{prefixe}")
-	commandes.append("end")
+	commandes.append("end") #problème ici certainement
 	return commandes
 		
 
@@ -64,11 +64,13 @@ def get_as_for_router(routeur, reseau_officiel):
 
 def config_bgp_routeur(routeur, reseau_officiel,routeur_iden,config_noeud):
     
-    dico_voisins = config_noeud[routeur]["ip_et_co"]
-    commandes = []
-    for voisin,liste in dico_voisins.items():
-        commandes.extend(config_bgp(routeur,voisin,reseau_officiel,routeur_iden, liste[1]))
-    return commandes
+	dico_voisins = config_noeud[routeur]["ip_et_co"]
+	commandes = ["conf t"]
+	for voisin,liste in dico_voisins.items():
+		commandes.extend(config_bgp(routeur,voisin,reseau_officiel,routeur_iden, liste[1]))
+	
+	commandes.append("exit")
+	return commandes
 ############################
 ##LOOPBACK functions#########
 
@@ -86,7 +88,7 @@ def generer_loopback_commandes(routeur,protocol):
 					f"no shutdown",
 					f" ipv6 enable",
 					"exit",
-					f"router {protocol}",
+					f"router {protocol}", #à vérifier ici la commande, il faut peut-être mettre le numéro du programme sur lequel tourne ospf
 					f" network {adresse_loopback}/128"
 				])
 	return commandes

@@ -2,8 +2,6 @@ import json
 import ipaddress
 import BGP as bgp
 # Charger le fichier de configuration du réseau
-with open('reseau_officiel.json', 'r') as file:
-    network_data = json.load(file)
 
 def configure_loopback_address(index):
     return f"2001:db8::{index}"
@@ -49,3 +47,8 @@ def sameAS(routeur1,routeur2,reseau_officiel):
 	as1 = bgp.get_as_for_router(routeur1,reseau_officiel)
 	as2 = bgp.get_as_for_router(routeur2,reseau_officiel)
 	return as1==as2
+
+
+if __name__=="__name__":
+     with open('reseau_officiel.json', 'r') as file:
+        network_data = json.load(file)
