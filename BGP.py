@@ -32,7 +32,7 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6):
 	adresse_reseau = str(network.network_address)
 	prefixe = network.prefixlen
 	commandes.append(f"network {adresse_reseau}/{prefixe}")
-	commandes.append("end") #problème ici certainement
+	commandes.append("exit") #problème ici certainement
 	return commandes
 		
 

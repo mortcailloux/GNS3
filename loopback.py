@@ -16,7 +16,7 @@ def generer_loopback_commandes(routeur,protocol):
                     f"no shutdown",
 					f" ipv6 enable",
                     "exit",
-                    f"router {protocol}",
+                    f"router {protocol}", #commande incomplète 
                     f" network {adresse_loopback}/128"
                 ])
     return commandes

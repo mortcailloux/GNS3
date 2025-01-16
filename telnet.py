@@ -12,9 +12,14 @@ def configure_router_telnet(ip, port, commands):
     """Execute les commandes fournies sur le routeur à l'aide de telnet"""
     try:
         tn = telnetlib.Telnet(ip, port)
+        tn.write(b"\r\n")
         tn.read_until(b"Router>", timeout=5)
+        tn.write(b"\r\n")
+
         tn.write(b"enable\r\n")
         tn.read_until(b"Router#", timeout=2)
+        tn.write(b"\r\n")
+        
         
         # Séparer les commandes correctement
         
