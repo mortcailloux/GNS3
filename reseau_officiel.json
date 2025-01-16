@@ -1,29 +1,80 @@
 {
-	"1":
-	{
-		"protocole" : "RIP",
+	"1": {
+		"protocole": "RIP",
 		"routeurs": {
-			"R1":{"Fast_Ethernet0/0":["R2",0],"Gigabit_Ethernet0/0":["R5",0]},
-			"R2":{"Fast_Ethernet0/0":["R1",0],"Gigabit_Ethernet0/0":["R3",0],"Gigabit_Ethernet1/0":["R5",0]},
-			"R3":{"Fast_Ethernet0/0":["R2",0],"Gigabit_Ethernet0/0":["R4",0],"Gigabit_Ethernet1/0":["R6",0],"Gigabit_Ethernet2/0":["R6",0]},
-			"R4":{"Fast_Ethernet0/0":["R3",0],"Gigabit_Ethernet0/0":["R6",0],"Gigabit_Ethernet1/0":["R8",0]},
-			"R5":{"Fast_Ethernet0/0":["R1",0],"Gigabit_Ethernet0/0":["R2",0],"Gigabit_Ethernet1/0":["R6",0]},
-			"R6":{"Fast_Ethernet0/0":["R3",0],"Gigabit_Ethernet0/0":["R4",0],"Gigabit_Ethernet1/0":["R5",0],"Gigabit_Ethernet2/0":["R7",0]},
-			"R7":{"Fast_Ethernet0/0":["R4",0],"Gigabit_Ethernet0/0":["R3",0],"Gigabit_Ethernet1/0":["R6",0],"Gigabit_Ethernet2/0":["R14",0]}
+			"R1": {
+				"Fast_Ethernet0/0": ["R2", 0],
+				"Gigabit_Ethernet1/0": ["R5", 0]
+			},
+			"R2": {
+				"Fast_Ethernet0/0": ["R1", 0],
+				"Gigabit_Ethernet1/0": ["R3", 0],
+				"Gigabit_Ethernet2/0": ["R5", 0]
+			},
+			"R3": {
+				"Fast_Ethernet0/0": ["R2", 0],
+				"Gigabit_Ethernet1/0": ["R4", 0],
+				"Gigabit_Ethernet2/0": ["R6", 0],
+				"Gigabit_Ethernet3/0": ["R6", 0]
+			},
+			"R4": {
+				"Fast_Ethernet0/0": ["R3", 0],
+				"Gigabit_Ethernet1/0": ["R6", 0],
+				"Gigabit_Ethernet2/0": ["R8", 0]
+			},
+			"R5": {
+				"Fast_Ethernet0/0": ["R1", 0],
+				"Gigabit_Ethernet1/0": ["R2", 0],
+				"Gigabit_Ethernet2/0": ["R6", 0]
+			},
+			"R6": {
+				"Fast_Ethernet0/0": ["R3", 0],
+				"Gigabit_Ethernet1/0": ["R4", 0],
+				"Gigabit_Ethernet2/0": ["R5", 0],
+				"Gigabit_Ethernet3/0": ["R7", 0]
+			},
+			"R7": {
+				"Fast_Ethernet0/0": ["R4", 0],
+				"Gigabit_Ethernet1/0": ["R3", 0],
+				"Gigabit_Ethernet2/0": ["R6", 0],
+				"Gigabit_Ethernet3/0": ["R14", 0]
+			}
 		}
-
 	},
-	"2":{
-		"protocole" : "OSPF",
-		"routeurs":{
-			"R8":{"Fast_Ethernet0/0":["R4",0],"Gigabit_Ethernet0/0":["R9",0],"Gigabit_Ethernet1/0":["R13",0]},
-			"R9":{"Fast_Ethernet0/0":["R8",0],"Gigabit_Ethernet0/0":["R10",0],"Gigabit_Ethernet1/0":["R13",0],"Gigabit_Ethernet2/0":["R14",0]},
-			"R10":{"Fast_Ethernet0/0":["R9",0],"Gigabit_Ethernet0/0":["R11",0],"Gigabit_Ethernet1/0":["R12",0]},
-			"R11":{"Fast_Ethernet0/0":["R10",0],"Gigabit_Ethernet0/0":["R12",0]},
-			"R12":{"Fast_Ethernet0/0":["R10",0],"Gigabit_Ethernet0/0":["R11",0],"Gigabit_Ethernet1/0":["R13",0]},
-			"R13":{"Fast_Ethernet0/0":["R8",0],"Gigabit_Ethernet0/0":["R9",0],"Gigabit_Ethernet1/0":["R12",0],"Gigabit_Ethernet2/0":["R14",0]},
-			"R14":{"Fast_Ethernet0/0":["R9",0],"Gigabit_Ethernet0/0":["R13",0],"Gigabit_Ethernet1/0":["R7",0]},
-
+	"2": {
+		"protocole": "OSPF",
+		"routeurs": {
+			"R8": {
+				"Fast_Ethernet0/0": ["R4", 0],
+				"Gigabit_Ethernet1/0": ["R9", 0],
+				"Gigabit_Ethernet2/0": ["R13", 0]
+			},
+			"R9": {
+				"Fast_Ethernet0/0": ["R8", 0],
+				"Gigabit_Ethernet1/0": ["R10", 0],
+				"Gigabit_Ethernet2/0": ["R13", 0],
+				"Gigabit_Ethernet3/0": ["R14", 0]
+			},
+			"R10": {
+				"Fast_Ethernet0/0": ["R9", 0],
+				"Gigabit_Ethernet1/0": ["R11", 0],
+				"Gigabit_Ethernet2/0": ["R12", 0]
+			},
+			"R11": {
+				"Fast_Ethernet0/0": ["R10", 0],
+				"Gigabit_Ethernet1/0": ["R12", 0]
+			},
+			"R12": {
+				"Fast_Ethernet0/0": ["R10", 0],
+				"Gigabit_Ethernet1/0": ["R11", 0],
+				"Gigabit_Ethernet2/0": ["R13", 0]
+			},
+			"R13": {
+				"Fast_Ethernet0/0": ["R8", 0],
+				"Gigabit_Ethernet1/0": ["R9", 0],
+				"Gigabit_Ethernet2/0": ["R12", 0],
+				"Gigabit_Ethernet3/0": ["R14", 0]
+			}
 		}
 	}
 }
