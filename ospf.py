@@ -12,7 +12,7 @@ def config_ospf(router_id,router_name, process_id, graphe,numAs, cost=0):
         list: liste des commandes pour configurer OSPF sur les routeurs
     """
     commands = ["conf t"]
-
+    commands.append("ipv6 unicast-routing")
     # Generate the router OSPF configuration commands
     commands.append(f"ipv6 router ospf {process_id}")
     commands.append(f"router-id {router_id}")
@@ -34,6 +34,6 @@ def config_ospf(router_id,router_name, process_id, graphe,numAs, cost=0):
         if cost:
             commands.append(f"ipv6 ospf cost {cost}")
         commands.append("exit")
-
+    commands.append("exit")
     return commands
 

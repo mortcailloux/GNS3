@@ -30,9 +30,32 @@ def configure_router_telnet(ip, port, commands):
             output = tn.read_until(b"#", timeout=2).decode('ascii')
             print(output)
             time.sleep(1)  # Augmenter le délai entre les commandes
+        
+        tn.write(b"write\r\n")
+        time.sleep(0.5)
+        tn.write(b"\r\n")
+        time.sleep(1)
+        tn.write(b"\r\n")
+        time.sleep(1)
+        tn.write(b"show running-config\r\n")
+        output=""
+        while True:
+            # Lire une partie de la sortie
+            chunk = tn.read_until(b"--More--", timeout=2).decode('ascii')
+            output += chunk.replace("--More--", "")
             
+            # Vérifier si la sortie est terminée
+            if "--More--" not in chunk:
+                break
+            
+            # Envoyer un espace pour continuer
+            tn.write(b" ")
         tn.write(b"exit\r\n")
+        tn.write(b"\r\n")
+        time.sleep(1)
+
         tn.close()
+        return output
         
     except Exception as e:
         print(f"Erreur lors de la configuration : {e}")

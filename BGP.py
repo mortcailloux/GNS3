@@ -36,6 +36,7 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voi
 	prefixe = network.prefixlen
 	commandes.append(f"network {adresse_reseau}/{prefixe}")
 	commandes.append("exit") #problème ici certainement
+	commandes.append("exit")
 	return commandes
 		
 
