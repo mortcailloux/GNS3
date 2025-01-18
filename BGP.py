@@ -87,10 +87,15 @@ def generer_loopback_commandes(routeur,protocol):
 					f" ipv6 address {adresse_loopback}/128",
 					f"no shutdown",
 					f" ipv6 enable",
-					"exit",
-					f"router {protocol}", #à vérifier ici la commande, il faut peut-être mettre le numéro du programme sur lequel tourne ospf
-					f" network {adresse_loopback}/128"
-				])
+					"exit",])
+	if protocol.lower() =="rip": #lower pour eviter la casse
+		commandes.extend([f"ipv6 router rip {routeur}",
+					"interface loopback0",
+					f"ipv6 rip {routeur} enable"])
+	elif protocol.lower() == "ospf":
+		commandes.extend(["ipv6 router opsf 1",
+					"interface loopback0",
+					"ipv6 ospf 1 area 0"])
 	return commandes
 
 def spread_loopback_iBGP(commandes, voisin,routeur,reseau_officiel,router_id,address_ipv6,adresse_voisin):
