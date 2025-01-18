@@ -52,6 +52,7 @@ def configure_router_telnet(ip, port, commands):
             tn.write(b" ")
         tn.write(b"exit\r\n")
         tn.write(b"\r\n")
+        time.sleep(1)
 
         tn.close()
         return output

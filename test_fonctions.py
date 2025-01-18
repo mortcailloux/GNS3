@@ -6,6 +6,7 @@ import RIP as rip
 import ospf
 import telnet
 import loopback
+import write_config as wc
 config_noeux={}
 with open("gns/reseau_officiel.json") as fichier:
     graphe=json.load(fichier)
@@ -27,4 +28,5 @@ port=config_noeux["R1"]["json_gns3"].console
 print(port)
 config=telnet.configure_router_telnet("127.0.0.1",port,commande)
 print(config)
+wc.creer_fichier_config("R1",config)
 
