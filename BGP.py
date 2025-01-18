@@ -17,13 +17,14 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6):
 	print(voisin_as)
 	
 	if sameAS(routeur,voisin,reseau_officiel): #iBGP
-		commandes.append(f"neighbor {address_ipv6} remote-as {AS}")
+		commandes.append(f"neighbor {address_ipv6} remote-as {AS}") #en fait c'est l'adresse ipv6 du voisin!!
 		
 	else: #eBGP
-		commandes.append(f"neighbor {address_ipv6} remote-as {voisin_as}") #change AS
+		commandes.append(f"neighbor {address_ipv6} remote-as {voisin_as}") #change AS, note 2 : adresse ipv6 du voisin
 
 	commandes.append(f"address-family ipv6 unicast")
-	commandes.append(f"neighbor {address_ipv6} activate")
+	commandes.append(f"neighbor {address_ipv6} activate")#adresse ipv6 du voisin
+
 
 	# Créer un objet IPv6Network
 	network = ipaddress.IPv6Network(address_ipv6, strict=False)
@@ -78,7 +79,7 @@ def config_bgp_routeur(routeur, reseau_officiel,routeur_iden,config_noeud):
 def configure_loopback_address(index):
 	return f"2001:db8::{index}"
 
-def generer_loopback_commandes(routeur,protocol):
+def generer_loopback_commandes(routeur,protocol,process_id):
 	commandes = []
 	index = routeur[1:]
 	adresse_loopback = configure_loopback_address(index)
@@ -90,12 +91,13 @@ def generer_loopback_commandes(routeur,protocol):
 					"exit",])
 	if protocol.lower() =="rip": #lower pour eviter la casse
 		commandes.extend([f"ipv6 router rip {routeur}",
-					"interface loopback0",
+					 "interface loopback0",
 					f"ipv6 rip {routeur} enable"])
 	elif protocol.lower() == "ospf":
-		commandes.extend(["ipv6 router opsf 1",
+		commandes.extend([f"ipv6 router opsf {process_id}",
 					"interface loopback0",
-					"ipv6 ospf 1 area 0"])
+					f"ipv6 ospf {process_id} area 0"])
+	commandes.append("end")
 	return commandes
 
 def spread_loopback_iBGP(commandes, voisin,routeur,reseau_officiel,router_id,address_ipv6,adresse_voisin):
