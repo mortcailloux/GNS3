@@ -1,7 +1,7 @@
 import json
 import ipaddress
 
-def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6):
+def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voisin):
 	"""
 	router : string
 	voisin du routeur : string
@@ -15,19 +15,21 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6):
 	commandes = [f"router bgp {AS}", "no bgp default ipv4-unicast",f"bgp router-id {router_id}"]
 	voisin_as = get_as_for_router(voisin, reseau_officiel)
 	print(voisin_as)
-	
+	# Créer un objet IPv6Network
+	network = ipaddress.IPv6Network(address_voisin, strict=False)
+	ipv6_noprefix = str(network.ip) #sans prefixe
+    
 	if sameAS(routeur,voisin,reseau_officiel): #iBGP
-		commandes.append(f"neighbor {address_ipv6} remote-as {AS}") #en fait c'est l'adresse ipv6 du voisin!!
+		commandes.append(f"neighbor {ipv6_noprefix} remote-as {AS}") #en fait c'est l'adresse ipv6 du voisin!!
 		
 	else: #eBGP
-		commandes.append(f"neighbor {address_ipv6} remote-as {voisin_as}") #change AS, note 2 : adresse ipv6 du voisin
+		commandes.append(f"neighbor {ipv6_noprefix} remote-as {voisin_as}") #change AS, note 2 : adresse ipv6 du voisin
 
 	commandes.append(f"address-family ipv6 unicast")
-	commandes.append(f"neighbor {address_ipv6} activate")#adresse ipv6 du voisin
+	commandes.append(f"neighbor {ipv6_noprefix} activate")#adresse ipv6 du voisin
 
 
-	# Créer un objet IPv6Network
-	network = ipaddress.IPv6Network(address_ipv6, strict=False)
+	
 
 	# Extraire l'adresse IPv6 et le préfixe
 	adresse_reseau = str(network.network_address)
@@ -100,9 +102,9 @@ def generer_loopback_commandes(routeur,protocol,process_id):
 	commandes.append("end")
 	return commandes
 
-def spread_loopback_iBGP(commandes, voisin,routeur,reseau_officiel,router_id,address_ipv6,adresse_voisin):
+def spread_loopback_iBGP(commandes, voisin,routeur,reseau_officiel,router_id,address_ipv6,adresse_voisin):#ici l'adresse voisin est bien sa @loop_voisin!
 	if sameAS(routeur,voisin,reseau_officiel): #si c'est dans meme AS on spread @loopback
-		commandes.extend(config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6))
+		commandes.extend(config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,adresse_voisin))
 		commandes.extend("configure terminal",f"router bgp {get_as_for_router(routeur)}",f"neighbor {adresse_voisin} update-source Loopback0")
 		return commandes
 	return None
