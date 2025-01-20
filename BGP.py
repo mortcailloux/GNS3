@@ -16,8 +16,7 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voi
 	voisin_as = get_as_for_router(voisin, reseau_officiel)
 	print(voisin_as)
 	# Créer un objet IPv6Network
-	network = ipaddress.IPv6Network(address_voisin, strict=False)
-	ipv6_noprefix = str(network.ip) #sans prefixe
+	ipv6_noprefix = address_voisin[:-3] #sans prefixe, ici ça ne fonctionne pas, pas d'attribu ip
     
 	if sameAS(routeur,voisin,reseau_officiel): #iBGP
 		commandes.append(f"neighbor {ipv6_noprefix} remote-as {AS}") #en fait c'est l'adresse ipv6 du voisin!!
@@ -29,7 +28,8 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voi
 	commandes.append(f"neighbor {ipv6_noprefix} activate")#adresse ipv6 du voisin
 
 
-	
+	network = ipaddress.IPv6Network(address_voisin, strict=False)
+
 
 	# Extraire l'adresse IPv6 et le préfixe
 	adresse_reseau = str(network.network_address)
@@ -69,9 +69,11 @@ def get_as_for_router(routeur, reseau_officiel):
 def config_bgp_routeur(routeur, reseau_officiel,routeur_iden,config_noeud):
     
 	dico_voisins = config_noeud[routeur]["ip_et_co"]
+	
 	commandes = ["conf t"]
 	for voisin,liste in dico_voisins.items():
-		commandes.extend(config_bgp(routeur,voisin,reseau_officiel,routeur_iden, liste[1]))
+		ip_voisin=config_noeud[voisin]["ip_et_co"][routeur][1] #on récupère l'ip du voisin connecté à notre routeur
+		commandes.extend(config_bgp(routeur,voisin,reseau_officiel,routeur_iden, liste[1],ip_voisin))
 	
 	commandes.append("exit")
 	return commandes
