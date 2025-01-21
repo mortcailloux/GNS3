@@ -16,8 +16,7 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voi
 	voisin_as = get_as_for_router(voisin, reseau_officiel)
 	print(voisin_as)
 	# Créer un objet IPv6Network
-	network = ipaddress.IPv6Network(address_voisin, strict=False)
-	ipv6_noprefix = str(network.ip) #sans prefixe
+	ipv6_noprefix = address_voisin[:-3] #sans prefixe, ici ça ne fonctionne pas, pas d'attribu ip
     
 	if sameAS(routeur,voisin,reseau_officiel): #iBGP
 		commandes.append(f"neighbor {ipv6_noprefix} remote-as {AS}") #en fait c'est l'adresse ipv6 du voisin!!
@@ -29,7 +28,8 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voi
 	commandes.append(f"neighbor {ipv6_noprefix} activate")#adresse ipv6 du voisin
 
 
-	
+	network = ipaddress.IPv6Network(address_voisin, strict=False)
+
 
 	# Extraire l'adresse IPv6 et le préfixe
 	adresse_reseau = str(network.network_address)
@@ -69,9 +69,11 @@ def get_as_for_router(routeur, reseau_officiel):
 def config_bgp_routeur(routeur, reseau_officiel,routeur_iden,config_noeud):
     
 	dico_voisins = config_noeud[routeur]["ip_et_co"]
+	
 	commandes = ["conf t"]
 	for voisin,liste in dico_voisins.items():
-		commandes.extend(config_bgp(routeur,voisin,reseau_officiel,routeur_iden, liste[1]))
+		ip_voisin=config_noeud[voisin]["ip_et_co"][routeur][1] #on récupère l'ip du voisin connecté à notre routeur
+		commandes.extend(config_bgp(routeur,voisin,reseau_officiel,routeur_iden, liste[1],ip_voisin))
 	
 	commandes.append("exit")
 	return commandes
@@ -79,31 +81,19 @@ def config_bgp_routeur(routeur, reseau_officiel,routeur_iden,config_noeud):
 ##LOOPBACK functions#########
 
 
-def configure_loopback_address(index):
-	return f"2001:db8::{index}"
-
-def generer_loopback_commandes(routeur,protocol,process_id):
-	commandes = []
-	index = routeur[1:]
-	adresse_loopback = configure_loopback_address(index)
-	commandes.extend([
-					f"interface loopback0",
-					f" ipv6 address {adresse_loopback}/128",
-					f"no shutdown",
-					f" ipv6 enable",
-					"exit",])
-	if protocol.lower() =="rip": #lower pour eviter la casse
-		commandes.extend([f"ipv6 router rip {routeur}",
-					 "interface loopback0",
-					f"ipv6 rip {routeur} enable"])
-	elif protocol.lower() == "ospf":
-		commandes.extend([f"ipv6 router opsf {process_id}",
-					"interface loopback0",
-					f"ipv6 ospf {process_id} area 0"])
-	commandes.append("end")
+def config_iBGP(routeur,reseau_officiel,router_id,config_noeud):
+	dico_voisins = config_noeud[routeur]["ip_et_co"]
+	adresse_self=config_noeud[routeur]["loopback"]
+	commandes=[]
+	for voisin, liste in dico_voisins.items():
+ 	
+		adresse_voisin=config_noeud[voisin]["loopback"]
+		commandes+=spread_loopback_iBGP(voisin,routeur,reseau_officiel,router_id,adresse_self,adresse_voisin)
 	return commandes
+	
 
-def spread_loopback_iBGP(commandes, voisin,routeur,reseau_officiel,router_id,address_ipv6,adresse_voisin):#ici l'adresse voisin est bien sa @loop_voisin!
+def spread_loopback_iBGP(voisin,routeur,reseau_officiel,router_id,address_ipv6,adresse_voisin):#ici l'adresse voisin est bien sa @loop_voisin!
+	commandes=[]
 	if sameAS(routeur,voisin,reseau_officiel): #si c'est dans meme AS on spread @loopback
 		commandes.extend(config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,adresse_voisin))
 		commandes.extend("configure terminal",f"router bgp {get_as_for_router(routeur)}",f"neighbor {adresse_voisin} remote-as {get_as_for_router(routeur,reseau_officiel)}",f"neighbor {adresse_voisin} update-source Loopback0")

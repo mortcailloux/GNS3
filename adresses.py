@@ -49,8 +49,9 @@ def attribue_ip(graphe,config_noeux):
                 else:
                     if routeur not in config_noeux.keys():
                             config_noeux[routeur]={}
+                            config_noeux[routeur]["ip_et_co"]={}
                     num_reseau,ips=reseaux[(routeur,connexion)]
-                    config_noeux[routeur][connexion]=ips.pop()
+                    config_noeux[routeur]["ip_et_co"][connexion]=[interface,ips.pop()]
     return config_noeux
 
 
