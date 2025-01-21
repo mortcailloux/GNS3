@@ -106,7 +106,7 @@ def generer_loopback_commandes(routeur,protocol,process_id):
 def spread_loopback_iBGP(commandes, voisin,routeur,reseau_officiel,router_id,address_ipv6,adresse_voisin):#ici l'adresse voisin est bien sa @loop_voisin!
 	if sameAS(routeur,voisin,reseau_officiel): #si c'est dans meme AS on spread @loopback
 		commandes.extend(config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,adresse_voisin))
-		commandes.extend("configure terminal",f"router bgp {get_as_for_router(routeur)}",f"neighbor {adresse_voisin} update-source Loopback0")
+		commandes.extend("configure terminal",f"router bgp {get_as_for_router(routeur)}",f"neighbor {adresse_voisin} remote-as {get_as_for_router(routeur,reseau_officiel)}",f"neighbor {adresse_voisin} update-source Loopback0")
 		return commandes
 	return None
 
