@@ -18,7 +18,7 @@ def format_cisco_config(input_text: str) -> str:
     """
     # Nettoie d'abord les caractères de contrôle
     input_text = clean_control_chars(input_text)
-    
+
     # Divise le texte en lignes
     lines = input_text.split('\r\n') if '\r\n' in input_text else input_text.split('\n') #on split avec \r\n s'il y en a sinon avec \n
     #split crée une liste en séparant le string au caractère spécifié
@@ -80,8 +80,9 @@ def format_cisco_config(input_text: str) -> str:
         formatted_lines.pop(0)
     while formatted_lines and (not formatted_lines[-1] or formatted_lines[-1] == '!'):
         formatted_lines.pop()
-    formatted_lines=formatted_lines[:-1] #on enlève le #R1 qui restait à la fin
+    formatted_lines=formatted_lines[:-1] #on enlève la fin
     # Retourne la configuration formatée
+    
     return '\n'.join(formatted_lines)  
 
 def write_config(nom_routeur:str,config:str)->None:
