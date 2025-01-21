@@ -18,7 +18,7 @@ id.config_router_id(graphe,config_noeux)
 commande=ad.genere_commandes_ip(config_noeux,"R1")
 print(type(config_noeux))
 lb.configure_looback_addresses(config_noeux)
-commande+=lb.generer_loopback_commandes("R1","ospf",1,config_noeux)
+commande+=lb.generer_loopback_commandes("R1","ospf",5,config_noeux)
 #mettre bgp après ospf/rip (il faut avoir configuré le routage ipv6#)
 commande+=ospf.config_ospf("1.1.1.1","R1",5,graphe,str(bgp.get_as_for_router("R1",graphe)),1) #attention pour accéder à la clé 
 #commande+=rip.config_rip_routeur("R1",graphe)

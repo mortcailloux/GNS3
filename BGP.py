@@ -93,12 +93,11 @@ def config_iBGP(routeur,reseau_officiel,router_id,config_noeud):
 	
 
 def spread_loopback_iBGP(voisin,routeur,reseau_officiel,router_id,address_ipv6,adresse_voisin):#ici l'adresse voisin est bien sa @loop_voisin!
-	commandes=[]
+	commandes=["conf t"]
 	if sameAS(routeur,voisin,reseau_officiel): #si c'est dans meme AS on spread @loopback
 		commandes.extend(config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,adresse_voisin))
-		commandes.extend("configure terminal",f"router bgp {get_as_for_router(routeur)}",f"neighbor {adresse_voisin} remote-as {get_as_for_router(routeur,reseau_officiel)}",f"neighbor {adresse_voisin} update-source Loopback0")
-		return commandes
-	return None
+		commandes+=["configure terminal",f"router bgp {get_as_for_router(routeur,reseau_officiel)}",f"neighbor {adresse_voisin} remote-as {get_as_for_router(routeur,reseau_officiel)}",f"neighbor {adresse_voisin} update-source Loopback0","exit","exit"]
+	return commandes
 
 def test():
     with open("reseau_officiel.json") as fichier:
