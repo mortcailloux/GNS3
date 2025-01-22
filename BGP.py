@@ -16,9 +16,11 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voi
 	voisin_as = get_as_for_router(voisin, reseau_officiel)
 	print(voisin_as)
 	# Créer un objet IPv6Network
-	ipv6_noprefix = address_voisin[:-3] #sans prefixe, ici ça ne fonctionne pas, pas d'attribu ip
-    
-	if sameAS(routeur,voisin,reseau_officiel): #iBGP
+	if "/" in address_voisin:
+		ipv6_noprefix = address_voisin[:-3] #sans prefixe, ici ça ne fonctionne pas, pas d'attribu ip
+	else:
+		ipv6_noprefix=address_voisin
+	if  sameAS(routeur,voisin,reseau_officiel): #iBGP
 		commandes.append(f"neighbor {ipv6_noprefix} remote-as {AS}") #en fait c'est l'adresse ipv6 du voisin!!
 		
 	else: #eBGP
@@ -96,7 +98,8 @@ def spread_loopback_iBGP(voisin,routeur,reseau_officiel,router_id,address_ipv6,a
 	commandes=["conf t"]
 	if sameAS(routeur,voisin,reseau_officiel): #si c'est dans meme AS on spread @loopback
 		commandes.extend(config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,adresse_voisin))
-		commandes+=["configure terminal",f"router bgp {get_as_for_router(routeur,reseau_officiel)}",f"neighbor {adresse_voisin} remote-as {get_as_for_router(routeur,reseau_officiel)}",f"neighbor {adresse_voisin} update-source Loopback0","exit","exit"]
+		commandes.append("exit")
+		commandes+=["configure termi",f"router bgp {get_as_for_router(routeur,reseau_officiel)}",f"neighbor {adresse_voisin} remote-as {get_as_for_router(routeur,reseau_officiel)}",f"neighbor {adresse_voisin} update-source Loopback0","exit","exit"]
 	return commandes
 
 def test():
