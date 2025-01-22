@@ -71,7 +71,7 @@ def configure_router_telnet(ip, port, commands):
             
             # Envoyer un espace pour continuer
             tn.write(b" ")
-        time.sleep(4)
+        time.sleep(3)
         tn.write(b"exit\r\n")
         tn.write(b"\r\n")
         time.sleep(1)

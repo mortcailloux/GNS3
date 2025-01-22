@@ -32,7 +32,7 @@ def config_routeur(routeur,graphe,config_noeuds,numas):
         print("protocole non reconnu")
         raise
     commande+=bgp.config_bgp_routeur(routeur,graphe,router_id,config_noeuds)
-    commande+=bgp.config_iBGP(routeur,graphe,router_id,config_noeuds)
+    commande+=bgp.config_iBGP(routeur,graphe,router_id,config_noeuds,numas)
     #commande+=loopback.generer_loopback_commandes(routeur,"ospf")
 
     
@@ -40,7 +40,7 @@ def config_routeur(routeur,graphe,config_noeuds,numas):
     config=telnet.configure_router_telnet("127.0.0.1",port,commande)
     wc.creer_fichier_config(routeur,config)
 if __name__=="__main__":
-    question=input("voulez-vous réinitialiser les configurations avant d'appliquer les nouvelles ? (oui/non)")
+    #question=input("voulez-vous réinitialiser les configurations avant d'appliquer les nouvelles ? (oui/non)")
     
     config_noeuds=ad.attribue_ip(graphe,config_noeuds)
     id.config_router_id(graphe,config_noeuds)
@@ -54,9 +54,7 @@ if __name__=="__main__":
     #             reinitialiser_routeur(routeur)
         
     #     pass #réinitialiser la config
-    with open("config_noeuds.json","w") as fichier:
 
-        json.dump(config_noeuds,fichier)
     
     for numas in graphe.keys():
         for routeur in graphe[numas]["routeurs"].keys():

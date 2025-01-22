@@ -34,7 +34,6 @@
 				"GigabitEthernet3/0": ["R7", 0]
 			},
 			"R7": {
-				"FastEthernet0/0": ["R4", 0],
 				"GigabitEthernet1/0": ["R3", 0],
 				"GigabitEthernet2/0": ["R6", 0],
 				"GigabitEthernet3/0": ["R14", 0]
@@ -76,6 +75,11 @@
 				"GigabitEthernet1/0": ["R9", 0],
 				"GigabitEthernet2/0": ["R12", 0],
 				"GigabitEthernet3/0": ["R14", 0]
+			},
+			"R14":{
+				"FastEthernet0/0": ["R7", 0],
+				"GigabitEthernet1/0": ["R9", 0],
+				"GigabitEthernet2/0": ["R13", 0]
 			}
 		}
 	}

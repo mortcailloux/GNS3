@@ -82,11 +82,11 @@ def config_bgp_routeur(routeur, reseau_officiel,routeur_iden,config_noeud):
 ##LOOPBACK functions#########
 
 
-def config_iBGP(routeur,reseau_officiel,router_id,config_noeud):
-	dico_voisins = config_noeud[routeur]["ip_et_co"]
+def config_iBGP(routeur,reseau_officiel,router_id,config_noeud,numas):
 	adresse_self=config_noeud[routeur]["loopback"]
+	voisins=reseau_officiel[numas]["routeurs"] #les voisins iBGP sont les mêmes routeurs du réseau
 	commandes=[]
-	for voisin, liste in dico_voisins.items():
+	for voisin in voisins.keys():
  	
 		adresse_voisin=config_noeud[voisin]["loopback"]
 		commandes+=spread_loopback_iBGP(voisin,routeur,reseau_officiel,router_id,adresse_self,adresse_voisin)
