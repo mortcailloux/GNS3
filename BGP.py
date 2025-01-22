@@ -14,7 +14,6 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voi
 	AS = get_as_for_router(routeur,reseau_officiel)
 	commandes = [f"router bgp {AS}", "no bgp default ipv4-unicast",f"bgp router-id {router_id}"]
 	voisin_as = get_as_for_router(voisin, reseau_officiel)
-	print(voisin_as)
 	# Créer un objet IPv6Network
 	if "/" in address_voisin:
 		ipv6_noprefix = address_voisin[:-3] #sans prefixe, ici ça ne fonctionne pas, pas d'attribu ip

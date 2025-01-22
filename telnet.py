@@ -6,7 +6,28 @@ from gns3fy import Gns3Connector, Project
 GNS3_SERVER = "http://127.0.0.1:3080"
 PROJECT_NAME = input("quel est le nom de votre projet ? (sensible à la casse)")  # Remplacez par le nom de votre projet
 
+def reinitialise_router_telnet(ip,port):
+    try:
+        tn = telnetlib.Telnet(ip, port)
+        tn.write(b"\r\n")
+        tn.read_until(b"Router>", timeout=5)
+        tn.write(b"\r\n")
 
+        tn.write(b"enable\r\n")
+        tn.read_until(b"Router#", timeout=2)
+        tn.write(b"\r\n")
+
+        tn.write(b"erase startup-config\r\n")
+        tn.read_until(b"Are you sure?", timeout=2)  # Si un message de confirmation apparaît
+        tn.write(b"\r\n")
+        tn.read_until(b"#", timeout=5)
+
+        tn.write(b"reload\r\n")
+        tn.read_until(b"Proceed with reload?", timeout=2)
+        tn.write(b"\r\n")
+        tn.read_until(b"#", timeout=5)
+    except Exception as e:
+        print(f"Erreur lors de la configuration : {e}")
 
 def configure_router_telnet(ip, port, commands):
     """Execute les commandes fournies sur le routeur à l'aide de telnet"""
@@ -29,8 +50,8 @@ def configure_router_telnet(ip, port, commands):
             # Attendre la réponse du routeur après chaque commande
             output = tn.read_until(b"#", timeout=2).decode('ascii')
             print(output)
-            time.sleep(1)  # Augmenter le délai entre les commandes
-        
+              # Augmenter le délai entre les commandes
+        time.sleep(1)
         tn.write(b"write\r\n")
         time.sleep(0.5)
         tn.write(b"\r\n")
@@ -41,7 +62,7 @@ def configure_router_telnet(ip, port, commands):
         output=""
         while True:
             # Lire une partie de la sortie
-            chunk = tn.read_until(b"--More--", timeout=2).decode('ascii')
+            chunk = tn.read_until(b"--More--", timeout=10).decode('ascii')
             output += chunk.replace("--More--", "")
             
             # Vérifier si la sortie est terminée
@@ -50,6 +71,7 @@ def configure_router_telnet(ip, port, commands):
             
             # Envoyer un espace pour continuer
             tn.write(b" ")
+        time.sleep(4)
         tn.write(b"exit\r\n")
         tn.write(b"\r\n")
         time.sleep(1)

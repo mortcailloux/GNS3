@@ -7,7 +7,6 @@ def configure_loopback_address(index):
 	return f"2001:db8::{index}"
 
 def configure_looback_addresses(config_noeuds):
-	print(type(config_noeuds))
 	for routeur in config_noeuds.keys():
 		config_noeuds[routeur]["loopback"]=configure_loopback_address(routeur[1:])
 
