@@ -52,6 +52,7 @@ def attribue_ip(graphe,config_noeux):
                             config_noeux[routeur]["ip_et_co"]={}
                     num_reseau,ips=reseaux[(routeur,connexion)]
                     config_noeux[routeur]["ip_et_co"][connexion]=[interface,ips.pop()]
+                    num_reseau+=1
     return config_noeux
 
 
@@ -81,6 +82,7 @@ def genere_commandes_ip(config_noeuds,noeud):
     
 
 
+if __name__=="__name":
 
-main()
+    main()
 

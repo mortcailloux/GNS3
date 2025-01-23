@@ -24,6 +24,7 @@ def config_rip_routeur(routeur,reseau_officiel):
     commandes = []
     for interface in dico_voisins.keys():
         commandes.extend(config_ripng(routeur,interface))
+    commandes.extend(config_ripng(routeur,"Loopback0"))
     return commandes
 
 def test():

@@ -23,14 +23,7 @@ def generer_loopback_commandes(routeur,protocol,process_id,config_noeuds):
 					f"no shutdown",
 					f" ipv6 enable",
 					"exit",])
-	if protocol.lower() =="rip": #lower pour eviter la casse
-		commandes.extend([f"ipv6 router rip {routeur}",
-					 "interface loopback0",
-					f"ipv6 rip {routeur} enable"])
-	elif protocol.lower() == "ospf":
-		commandes.extend([f"ipv6 router ospf {process_id}", #non mais comment tu as un o différent qui fait crash le routeur cisco ??
-					"interface loopback0",
-					f"ipv6 ospf {process_id} area 0"])
+	
 	commandes.append("end")
 	return commandes
 
