@@ -16,7 +16,7 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voi
 	voisin_as = get_as_for_router(voisin, reseau_officiel)
 	# Créer un objet IPv6Network
 	if "/" in address_voisin:
-		ipv6_noprefix = address_voisin[:-3] #sans prefixe, ici ça ne fonctionne pas, pas d'attribu ip
+		ipv6_noprefix = address_voisin[:-3] #sans prefixe, ici ça ne fonctionne pas, pas d'attribut ip
 	else:
 		ipv6_noprefix=address_voisin
 	if  sameAS(routeur,voisin,reseau_officiel): #iBGP
@@ -87,9 +87,9 @@ def config_iBGP(routeur,reseau_officiel,router_id,config_noeud,numas):
 	voisins=reseau_officiel[numas]["routeurs"] #les voisins iBGP sont les mêmes routeurs du réseau
 	commandes=[]
 	for voisin in voisins.keys():
- 	
-		adresse_voisin=config_noeud[voisin]["loopback"]
-		commandes+=spread_loopback_iBGP(voisin,routeur,reseau_officiel,router_id,adresse_self,adresse_voisin)
+		if routeur != voisin: #on ne veut pas configurer le routeur lui-même comme voisin
+			adresse_voisin=config_noeud[voisin]["loopback"]
+			commandes+=spread_loopback_iBGP(voisin,routeur,reseau_officiel,router_id,adresse_self,adresse_voisin)
 	return commandes
 	
 

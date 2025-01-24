@@ -14,10 +14,9 @@ def attribue_ip(graphe,config_noeux):
     num_reseau=1
     for ass in graphe.keys():
         for routeur in graphe[ass]["routeurs"]:
-            
             for interface,connexion in graphe[ass]["routeurs"][routeur].items():
                 connexion=connexion[0] #on n'a pas besoin d'utiliser le coût
-                if (connexion,routeur) not in reseaux.keys():
+                if (connexion,routeur) not in reseaux.keys() and (routeur,connexion) not in reseaux.keys():
                     if "switch" in connexion:
                         nbrouteur= len(graphe[ass]["switches"][connexion])+1
                         ips=genere_ip_reseau(num_reseau,nbrouteur,ass)
@@ -50,7 +49,7 @@ def attribue_ip(graphe,config_noeux):
                     if routeur not in config_noeux.keys():
                             config_noeux[routeur]={}
                             config_noeux[routeur]["ip_et_co"]={}
-                    num_reseau,ips=reseaux[(routeur,connexion)]
+                    a,ips=reseaux[(routeur,connexion)] #patch duplication d'IP
                     config_noeux[routeur]["ip_et_co"][connexion]=[interface,ips.pop()]
                     num_reseau+=1
     return config_noeux
@@ -82,7 +81,7 @@ def genere_commandes_ip(config_noeuds,noeud):
     
 
 
-if __name__=="__name":
+if __name__=="__main__":
 
     main()
 

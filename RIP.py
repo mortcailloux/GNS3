@@ -19,8 +19,8 @@ def config_ripng(routeur,interface):
 		# 	interface = "FastEthernet0/0" 
 		# else:
 		# 	interface = f"GigabitEthernet{i}/0"
-def config_rip_routeur(routeur,reseau_officiel):
-    dico_voisins = reseau_officiel["1"]["routeurs"][routeur]
+def config_rip_routeur(routeur,reseau_officiel,numAs):
+    dico_voisins = reseau_officiel[numAs]["routeurs"][routeur]
     commandes = []
     for interface in dico_voisins.keys():
         commandes.extend(config_ripng(routeur,interface))

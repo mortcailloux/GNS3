@@ -34,6 +34,17 @@ def config_ospf(router_id,router_name, process_id, graphe,numAs, cost=0):
         if cost:
             commands.append(f"ipv6 ospf cost {cost}")
         commands.append("exit")
+    interface="Loopback0" #on configure aussi la loopback pour l'IGP
+    commands.append(f"interface {interface}")
+    commands.append(f"ipv6 ospf {process_id} area 0")
+    if cost:
+        commands.append(f"ipv6 ospf cost {cost}")
+    commands.append("exit")
+    commands.append(f"interface {interface}")
+    commands.append(f"ipv6 ospf {process_id} area 0")
+    if cost:
+        commands.append(f"ipv6 ospf cost {cost}")
+    commands.append("exit")
     commands.append("exit")
     return commands
 

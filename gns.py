@@ -11,6 +11,13 @@ config_noeuds={}
 with open("gns/reseau_officiel.json") as fichier:
     graphe=json.load(fichier)
 
+def handle_non_serializable(obj):
+    # Retourne une valeur sérialisable pour les objets non sérialisables
+    try:
+        return str(obj)  # Convertit en chaîne
+    except Exception:
+        return None  # Ignore l'objet non sérialisable
+
 def reinitialiser_routeur(routeur):
     port=config_noeuds[routeur]["json_gns3"].console
     print("réinitialisation de",routeur)
@@ -27,7 +34,7 @@ def config_routeur(routeur,graphe,config_noeuds,numas):
     if protocole.lower()=="ospf":
         commande+=ospf.config_ospf(router_id,routeur,5,graphe,numas,1) 
     elif protocole.lower()=="rip":
-        commande+=rip.config_rip_routeur(routeur,graphe)
+        commande+=rip.config_rip_routeur(routeur,graphe,numas)
     else:
         print("protocole non reconnu")
         raise
@@ -47,7 +54,8 @@ if __name__=="__main__":
 
     lb.configure_looback_addresses(config_noeuds)
     telnet.recupérer_jsongns3_routeur(config_noeuds)
-    
+    with open("config_noeuds.json","w") as outfile:
+        json.dump(config_noeuds,outfile,default=handle_non_serializable)
     # if question=="oui":
     #     for numas in graphe.keys():
     #         for routeur in graphe[numas]["routeurs"].keys():
