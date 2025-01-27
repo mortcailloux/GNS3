@@ -39,6 +39,11 @@
 				"GigabitEthernet3/0": ["R14", 0]
 			}
 
+		},
+		"relation": {
+			"provider": [],
+			"peer": ["2"],
+			"customer": []
 		}
 	},
 
@@ -81,6 +86,11 @@
 				"GigabitEthernet1/0": ["R9", 0],
 				"GigabitEthernet2/0": ["R13", 0]
 			}
+		},
+		"relation": {
+			"provider": [],
+			"peer": ["1"],
+			"customer": []
 		}
 	}
 }
