@@ -28,11 +28,15 @@ def format_cisco_config(input_text: str) -> str:
     # Flag pour le contrôle du formatage
     previous_empty = False
     config_started = False
-    
+    fin=False
     for line in lines:
         # Détecte le début de la configuration réelle
-        if 'version' in line:
+        if 'version 15.2' in line:
             config_started = True
+        if fin:
+            continue
+        if "login" in line:
+            fin=True
         #on supprime les lignes présentes qui sont restés dans la sortie telnet et dont on n'a pas besoin
         if not config_started:
             continue
@@ -64,7 +68,6 @@ def format_cisco_config(input_text: str) -> str:
             
         # Ajoute la ligne à la sortie
         formatted_lines.append(line)
-    
     # Trouve l'index de la dernière ligne de configuration significative
     last_config_index = len(formatted_lines)
     for i in range(len(formatted_lines) - 1, -1, -1):
@@ -80,7 +83,6 @@ def format_cisco_config(input_text: str) -> str:
         formatted_lines.pop(0)
     while formatted_lines and (not formatted_lines[-1] or formatted_lines[-1] == '!'):
         formatted_lines.pop()
-    formatted_lines=formatted_lines[:-1] #on enlève la fin
     # Retourne la configuration formatée
     
     return '\n'.join(formatted_lines)  
