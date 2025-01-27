@@ -1,10 +1,6 @@
 import json
 import ipaddress
 
-<<<<<<< HEAD
-nù
-e  def config_bgp(routeur,voisin,data,router_id,address_ipv6):
-=======
 def annonce_reseau(routeur_iteration,routeur_sur_lequel_on_applique,reseau,commandes):
 	if routeur_iteration==routeur_sur_lequel_on_applique:
 		commandes.append(f"network {reseau}")
@@ -15,8 +11,7 @@ def annonce_reseau(routeur_iteration,routeur_sur_lequel_on_applique,reseau,comma
 	pass
 
 
-def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voisin):
->>>>>>> origin/HEAD
+def config_bgp(routeur,voisin,data,router_id,address_ipv6):
 	"""
 	router : string
 	voisin du routeur : string
@@ -27,14 +22,6 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voi
 	"""
 	AS = get_as_for_router(routeur,data)
 	commandes = [f"router bgp {AS}", "no bgp default ipv4-unicast",f"bgp router-id {router_id}"]
-<<<<<<< HEAD
-	voisin_as = get_as_for_router(voisin, data)
-	print(voisin_as)
-	
-	if sameAS(routeur,voisin,data): #iBGP
-		commandes.append(f"neighbor {address_ipv6} remote-as {AS}")
-		commandes.append(f"neighbor {address_ipv6} send-community both") #propagate the community to iBGP neighbors
-=======
 	voisin_as = get_as_for_router(voisin, reseau_officiel)
 	# Créer un objet IPv6Network
 	if "/" in address_voisin:
@@ -43,7 +30,6 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voi
 		ipv6_noprefix=address_voisin
 	if  sameAS(routeur,voisin,reseau_officiel): #iBGP
 		commandes.append(f"neighbor {ipv6_noprefix} remote-as {AS}") #en fait c'est l'adresse ipv6 du voisin!!
->>>>>>> origin/HEAD
 		
 	else: #eBGP
 		commandes.append(f"neighbor {address_ipv6} remote-as {voisin_as}") #change AS
@@ -57,16 +43,11 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voi
 	# Extraire l'adresse IPv6 et le préfixe
 	adresse_reseau = str(network.network_address)
 	prefixe = network.prefixlen
-<<<<<<< HEAD
-	commandes.append(f"network {adresse_reseau}/{prefixe}")
-	commandes.append("end")
-=======
 	annonce_reseau(routeur,"R1","2001:1:1::/64",commandes) #on annonce seulement le réseau spécifié
 	annonce_reseau(routeur,"R11","2001:2:31::/64",commandes)
 	
 	commandes.append("exit") #problème ici certainement
 	commandes.append("exit")
->>>>>>> origin/HEAD
 	return commandes
 		
 
@@ -120,23 +101,10 @@ def policies(routeur, voisin, data, address_ipv6):
 	commandes.append("exit")
 	commandes.append("exit")
 
-<<<<<<< HEAD
 	for name, value, tag in (("CUSTOMER", "200", f"{as_number}:200"), ("PEER", "150", f"{as_number}:150"), ("PROVIDER", "100", f"{as_number}:100")):
 		commandes.append(f"route-map {name} permit 10")
 		commandes.append(f"set local-preference {value}")
 		commandes.append(f"set community {tag} additive")
-=======
-
-def config_iBGP(routeur,reseau_officiel,router_id,config_noeud,numas):
-	adresse_self=config_noeud[routeur]["loopback"]
-	voisins=reseau_officiel[numas]["routeurs"] #les voisins iBGP sont les mêmes routeurs du réseau
-	commandes=[]
-	for voisin in voisins.keys():
-		if routeur != voisin: #on ne veut pas configurer le routeur lui-même comme voisin
-			adresse_voisin=config_noeud[voisin]["loopback"]
-			commandes+=spread_loopback_iBGP(voisin,routeur,reseau_officiel,router_id,adresse_self,adresse_voisin)
-	return commandes
->>>>>>> origin/HEAD
 	
 		commandes.append(f"ip community-list standard BLOCK permit {as_number}:100")
 		commandes.append(f"ip community-list standard BLOCK permit {as_number}:150")
@@ -148,6 +116,15 @@ def config_iBGP(routeur,reseau_officiel,router_id,config_noeud,numas):
 	
 	return commandes
 
+def config_iBGP(routeur,reseau_officiel,router_id,config_noeud,numas):
+	adresse_self=config_noeud[routeur]["loopback"]
+	voisins=reseau_officiel[numas]["routeurs"] #les voisins iBGP sont les mêmes routeurs du réseau
+	commandes=[]
+	for voisin in voisins.keys():
+		if routeur != voisin: #on ne veut pas configurer le routeur lui-même comme voisin
+			adresse_voisin=config_noeud[voisin]["loopback"]
+			commandes+=spread_loopback_iBGP(voisin,routeur,reseau_officiel,router_id,adresse_self,adresse_voisin)
+	return commandes
 
 def test():
 	with open("GNS3/reseau_officiel.json") as fichier:
