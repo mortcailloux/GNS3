@@ -11,7 +11,7 @@ def annonce_reseau(routeur_iteration,routeur_sur_lequel_on_applique,reseau,comma
 	pass
 
 
-def config_bgp(routeur,voisin,data,router_id,address_ipv6):
+def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voisin):
 	"""
 	router : string
 	voisin du routeur : string
@@ -20,7 +20,7 @@ def config_bgp(routeur,voisin,data,router_id,address_ipv6):
 	address_ipv6 : 2001:{numass}:{numreseau}::{i+1}/64 string
 	
 	"""
-	AS = get_as_for_router(routeur,data)
+	AS = get_as_for_router(routeur,reseau_officiel)
 	commandes = [f"router bgp {AS}", "no bgp default ipv4-unicast",f"bgp router-id {router_id}"]
 	voisin_as = get_as_for_router(voisin, reseau_officiel)
 	# Créer un objet IPv6Network
@@ -76,6 +76,19 @@ def get_as_for_router(routeur, data):
         if routeur in as_data["routeurs"]:
             return int(as_number)
     return None  # Retourne None si le routeur n'est pas trouvé
+
+
+def config_bgp_routeur(routeur, reseau_officiel,routeur_iden,config_noeud):
+    
+	dico_voisins = config_noeud[routeur]["ip_et_co"]
+	
+	commandes = ["conf t"]
+	for voisin,liste in dico_voisins.items():
+		ip_voisin=config_noeud[voisin]["ip_et_co"][routeur][1] #on récupère l'ip du voisin connecté à notre routeur
+		commandes.extend(config_bgp(routeur,voisin,reseau_officiel,routeur_iden, liste[1],ip_voisin))
+	
+	commandes.append("exit")
+	return commandes
 
 def get_relation(as_number_to_config, as_number_neighbor, data):
 	as_number_to_config = str(as_number_to_config)
