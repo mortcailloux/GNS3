@@ -78,6 +78,14 @@ def get_as_for_router(routeur, data):
     return None  # Retourne None si le routeur n'est pas trouvé
 
 
+def spread_loopback_iBGP(voisin,routeur,reseau_officiel,router_id,address_ipv6,adresse_voisin):#ici l'adresse voisin est bien sa @loop_voisin!
+	commandes=["conf t"]
+	if sameAS(routeur,voisin,reseau_officiel): #si c'est dans meme AS on spread @loopback
+		commandes.extend(config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,adresse_voisin))
+		commandes.append("exit")
+		commandes+=["configure termi",f"router bgp {get_as_for_router(routeur,reseau_officiel)}",f"neighbor {adresse_voisin} remote-as {get_as_for_router(routeur,reseau_officiel)}",f"neighbor {adresse_voisin} update-source Loopback0","exit","exit"]
+	return commandes
+
 def config_bgp_routeur(routeur, reseau_officiel,routeur_iden,config_noeud):
     
 	dico_voisins = config_noeud[routeur]["ip_et_co"]
