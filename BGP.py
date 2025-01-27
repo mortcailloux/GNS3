@@ -1,6 +1,16 @@
 import json
 import ipaddress
 
+def annonce_reseau(routeur_iteration,routeur_sur_lequel_on_applique,reseau,commandes):
+	if routeur_iteration==routeur_sur_lequel_on_applique:
+		commandes.append(f"network {reseau}")
+
+		pass
+
+
+	pass
+
+
 def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voisin):
 	"""
 	router : string
@@ -35,7 +45,9 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voi
 	# Extraire l'adresse IPv6 et le préfixe
 	adresse_reseau = str(network.network_address)
 	prefixe = network.prefixlen
-	commandes.append(f"network {adresse_reseau}/{prefixe}")
+	annonce_reseau(routeur,"R1","2001:1:1::/64",commandes) #on annonce seulement le réseau spécifié
+	annonce_reseau(routeur,"R11","2001:2:31::/64",commandes)
+	
 	commandes.append("exit") #problème ici certainement
 	commandes.append("exit")
 	return commandes
