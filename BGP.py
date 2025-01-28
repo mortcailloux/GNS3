@@ -20,6 +20,7 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voi
 	address_ipv6 : 2001:{numass}:{numreseau}::{i+1}/64 string
 	
 	"""
+	exi=True
 	AS = get_as_for_router(routeur,reseau_officiel)
 	commandes = [f"router bgp {AS}", "no bgp default ipv4-unicast",f"bgp router-id {router_id}"]
 	voisin_as = get_as_for_router(voisin, reseau_officiel)
@@ -28,14 +29,20 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voi
 		ipv6_noprefix = address_voisin[:-3] #sans prefixe, ici ça ne fonctionne pas, pas d'attribut ip
 	else:
 		ipv6_noprefix=address_voisin
-	if  sameAS(routeur,voisin,reseau_officiel): #iBGP
+	memeAs=sameAS(routeur,voisin,reseau_officiel)
+	if  memeAs and "db8" in ipv6_noprefix: #iBGP, on ne veut garder que les adresses loopback
 		commandes.append(f"neighbor {ipv6_noprefix} remote-as {AS}") #en fait c'est l'adresse ipv6 du voisin!!
+		commandes.append(f"address-family ipv6 unicast")
+		commandes.append(f"neighbor {ipv6_noprefix} activate")
 		
-	else: #eBGP
-		commandes.append(f"neighbor {address_ipv6} remote-as {voisin_as}") #change AS
-
-	commandes.append(f"address-family ipv6 unicast")
-	commandes.append(f"neighbor {address_ipv6} activate")
+	elif not memeAs: #eBGP
+		commandes.append(f"neighbor {ipv6_noprefix} remote-as {voisin_as}") #change AS
+		commandes.append(f"address-family ipv6 unicast")
+		commandes.append(f"neighbor {ipv6_noprefix} activate")
+	else: 
+		exi=False
+		#on ignore, quand ça ne correspond à aucun des cas si dessus (on ne veut pas établir iBGP sur les interfaces)
+	
 
 	# Créer un objet IPv6Network
 	network = ipaddress.IPv6Network(address_ipv6, strict=False)
@@ -43,11 +50,15 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voi
 	# Extraire l'adresse IPv6 et le préfixe
 	adresse_reseau = str(network.network_address)
 	prefixe = network.prefixlen
-	annonce_reseau(routeur,"R1","2001:1:1::/64",commandes) #on annonce seulement le réseau spécifié
-	annonce_reseau(routeur,"R11","2001:2:31::/64",commandes)
-	
-	commandes.append("exit") #problème ici certainement
-	commandes.append("exit")
+	if exi:
+		annonce_reseau(routeur,"R1","2001:1:1::/64",commandes) #on annonce seulement les réseau spécifié
+		annonce_reseau(routeur,"R1","2001:1:2::/64",commandes) #on veut annoncer les 2 réseaux de R1 et R11 comme ça on n'a pas de comportement étrange
+		annonce_reseau(routeur,"R11","2001:2:31::/64",commandes)
+		annonce_reseau(routeur,"R11","2001:2:34::/64",commandes)
+
+		
+		commandes.append("exit") #problème ici certainement
+		commandes.append("exit")
 	return commandes
 		
 
@@ -156,6 +167,6 @@ def test():
 	# 		as_num = get_as_for_router(routeur, data)
 	# 		print(f"{routeur}: AS {as_num}")
 	print(config_bgp("R4","R8",data,"4.4.4.4","2001:168:192::2/64"))
-
-test()
+if __name__=="__main__":
+	test()
 

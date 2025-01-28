@@ -1,10 +1,5 @@
 import telnetlib
 import time
-from gns3fy import Gns3Connector, Project
-
-# Configuration du serveur GNS3
-GNS3_SERVER = "http://127.0.0.1:3080"
-PROJECT_NAME = input("quel est le nom de votre projet ? (sensible à la casse)")  # Remplacez par le nom de votre projet
 
 def reinitialise_router_telnet(ip,port):
     try:
@@ -51,13 +46,11 @@ def configure_router_telnet(ip, port, commands):
             output = tn.read_until(b"#", timeout=2).decode('ascii')
             print(output)
               # Augmenter le délai entre les commandes
-        time.sleep(1)
+        
         tn.write(b"write\r\n")
-        time.sleep(0.5)
+        
         tn.write(b"\r\n")
-        time.sleep(1)
         tn.write(b"\r\n")
-        time.sleep(1)
         tn.write(b"show running-config\r\n")
         output=""
         while True:
@@ -71,12 +64,12 @@ def configure_router_telnet(ip, port, commands):
             
             # Envoyer un espace pour continuer
             tn.write(b" ")
-        time.sleep(3)
+        
         tn.write(b"exit\r\n")
         tn.write(b"\r\n")
-        time.sleep(1)
 
         tn.close()
+        print("sauvegarde de la configuration")
         return output
         
     except Exception as e:
@@ -85,14 +78,9 @@ def configure_router_telnet(ip, port, commands):
   # Le port Telnet vient de l'API GNS3
 #le port est ensuite stocké dans config_noeud, accès: noeud_config["nom_noeud"]["json_gns3"]["console"]
 
-# Connexion au serveur GNS3
-connector = Gns3Connector(GNS3_SERVER)
 
-# Récupérer le projet par son nom
-project = Project(name=PROJECT_NAME, connector=connector)
-project.get()
 
-def recupérer_jsongns3_routeur(config_noeuds, project_gns=project):
+def recupérer_jsongns3_routeur(config_noeuds, project_gns):
     """mets le json de gns3 dans la config des noeuds"""
     for routeur in project_gns.nodes:
         nom=routeur.name #normalement le nom est identique à un routeurs que l'on a déjà renseigné dans le dictionnaire
@@ -107,6 +95,18 @@ def trouve_port_telnet_routeur(routeur,project_gns3):
             return node.console
 
 if __name__=="__main__":
+    from gns3fy import Gns3Connector, Project
+
+    # Configuration du serveur GNS3
+    GNS3_SERVER = "http://127.0.0.1:3080"
+    PROJECT_NAME = input("quel est le nom de votre projet ? (sensible à la casse)")  # Remplacez par le nom de votre projet
+    
+    # Connexion au serveur GNS3
+    connector = Gns3Connector(GNS3_SERVER)
+
+    # Récupérer le projet par son nom
+    project = Project(name=PROJECT_NAME, connector=connector)
+    project.get()
     #tests
     port=trouve_port_telnet_routeur("R5",project)
     print(port)

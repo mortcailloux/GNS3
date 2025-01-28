@@ -1,15 +1,16 @@
-import adresses as ad
-import BGP as bgp
-import json
-import router_id as id
-import RIP as rip
-import ospf
-import telnet
-import loopback as lb
+
+
 import write_config as wc
+import multiprocessing
+import telnet
+
 config_noeuds={}
-with open("gns/reseau_officiel.json") as fichier:
-    graphe=json.load(fichier)
+
+def write_telnet_and_save(port,commande,routeur):
+    config=telnet.configure_router_telnet("127.0.0.1",port,commande)
+    wc.creer_fichier_config(routeur,config)
+
+    pass
 
 def handle_non_serializable(obj):
     # Retourne une valeur sérialisable pour les objets non sérialisables
@@ -24,7 +25,7 @@ def reinitialiser_routeur(routeur):
     telnet.reinitialise_router_telnet("127.0.0.1",port)
     
 
-def config_routeur(routeur,graphe,config_noeuds,numas):
+def config_routeur(routeur,graphe,config_noeuds,numas,process):
     protocole=graphe[numas]["protocole"] #récupérer le protocole ici
     router_id=config_noeuds[routeur]["router_id"]#récupérer le routeur_id ici
     #le graphe est le dico obtenu à partir du json
@@ -44,16 +45,41 @@ def config_routeur(routeur,graphe,config_noeuds,numas):
 
     
     port=config_noeuds[routeur]["json_gns3"].console
-    config=telnet.configure_router_telnet("127.0.0.1",port,commande)
-    wc.creer_fichier_config(routeur,config)
+
+    p=multiprocessing.Process(target=write_telnet_and_save,args=(port,commande,routeur))
+    p.start()
+    process.append(p)
 if __name__=="__main__":
-    #question=input("voulez-vous réinitialiser les configurations avant d'appliquer les nouvelles ? (oui/non)")
+    from gns3fy import Gns3Connector, Project
+
+    import adresses as ad
+    import BGP as bgp
+    import router_id as id
+    import RIP as rip
+    import ospf
+    import telnet
+    import loopback as lb
+    import json #on ne veut pas tout importer dans chaque process (ça prend beaucoup de temps)
+
+    with open("gns/reseau_officiel.json") as fichier:
+        graphe=json.load(fichier)
+
+    GNS3_SERVER = "http://127.0.0.1:3080"
+    PROJECT_NAME = input("quel est le nom de votre projet ? (sensible à la casse)")
     
+    # Connexion au serveur GNS3
+    connector = Gns3Connector(GNS3_SERVER)
+
+    # Récupérer le projet par son nom
+    project = Project(name=PROJECT_NAME, connector=connector)
+    project.get()
+    #question=input("voulez-vous réinitialiser les configurations avant d'appliquer les nouvelles ? (oui/non)")
+    process=[]
     config_noeuds=ad.attribue_ip(graphe,config_noeuds)
     id.config_router_id(graphe,config_noeuds)
 
     lb.configure_looback_addresses(config_noeuds)
-    telnet.recupérer_jsongns3_routeur(config_noeuds)
+    telnet.recupérer_jsongns3_routeur(config_noeuds,project)
     with open("config_noeuds.json","w") as outfile:
         json.dump(config_noeuds,outfile,default=handle_non_serializable)
     # if question=="oui":
@@ -66,8 +92,9 @@ if __name__=="__main__":
     
     for numas in graphe.keys():
         for routeur in graphe[numas]["routeurs"].keys():
-            config_routeur(routeur,graphe,config_noeuds,numas) #on configure tous les routeurs
-
+            config_routeur(routeur,graphe,config_noeuds,numas,process) #on configure tous les routeurs
+    for p in process:
+        p.join()
 
 
 
