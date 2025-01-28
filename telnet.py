@@ -2,6 +2,10 @@ import telnetlib
 import time
 
 def reinitialise_router_telnet(ip,port):
+    """
+    sert initialement à réinitialiser la config des routeurs,
+    ne fonctionne pas par contre
+    """
     try:
         tn = telnetlib.Telnet(ip, port)
         tn.write(b"\r\n")
@@ -25,7 +29,15 @@ def reinitialise_router_telnet(ip,port):
         print(f"Erreur lors de la configuration : {e}")
 
 def configure_router_telnet(ip, port, commands):
-    """Execute les commandes fournies sur le routeur à l'aide de telnet"""
+    """
+    Execute les commandes fournies sur le routeur à l'aide de telnet
+    paramètres: 
+        ip du serveur gns (gns tourne en local donc c'est la loopback pour nous)
+        port sur lequel est émulé 
+        commandes que l'on souhaite appliquer au routeur
+    retour:
+        résultat de la commande show running-config à sauvegarder dans un fichier de config .cfg
+    """
     try:
         tn = telnetlib.Telnet(ip, port)
         tn.write(b"\r\n")
@@ -81,7 +93,15 @@ def configure_router_telnet(ip, port, commands):
 
 
 def recupérer_jsongns3_routeur(config_noeuds, project_gns):
-    """mets le json de gns3 dans la config des noeuds"""
+    """mets le json de gns3 dans la config des noeuds
+    on peut en avoir besoin par la suite
+    paramètres:
+        dictionnaire des configs
+        projet gns (un objet de type Projet Gns3)
+    retour: 
+        None, on modifie le dictionnaire d'entrée
+
+    """
     for routeur in project_gns.nodes:
         nom=routeur.name #normalement le nom est identique à un routeurs que l'on a déjà renseigné dans le dictionnaire
         if "PC" not in nom and "Switch" not in nom:

@@ -2,17 +2,24 @@
 
 import write_config as wc
 import multiprocessing
-import telnet
+import telnet #on veut importer ces 3 fichiers/librairies dans chaque process (chaque process a besoin d'écrire avec telnet et sur un fichier)
 
 config_noeuds={}
 
 def write_telnet_and_save(port,commande,routeur):
+    """
+    fonction qui permet à chaque process d'écrire sur un routeur avec telnet, de récupérer la config et de l'écrire dans un fichier cfg
+    
+    """
     config=telnet.configure_router_telnet("127.0.0.1",port,commande)
     wc.creer_fichier_config(routeur,config)
 
     pass
 
 def handle_non_serializable(obj):
+    """
+    pour récupérer le json sans avoir le bug de truc non serialisable (objet de la librairie gns3)
+    """
     # Retourne une valeur sérialisable pour les objets non sérialisables
     try:
         return str(obj)  # Convertit en chaîne
@@ -20,12 +27,29 @@ def handle_non_serializable(obj):
         return None  # Ignore l'objet non sérialisable
 
 def reinitialiser_routeur(routeur):
+    """
+    ne fonctionne pas, il n'est pas possible de réinitialiser les routeurs avec gns3 par commandes (ou alors je n'ai juste pas les bonnes commandes)
+    
+    """
     port=config_noeuds[routeur]["json_gns3"].console
     print("réinitialisation de",routeur)
     telnet.reinitialise_router_telnet("127.0.0.1",port)
     
 
 def config_routeur(routeur,graphe,config_noeuds,numas,process):
+    """
+    
+    configure un seul routeur (génère les commands puis crée un process qui écrie sur le routeur et sauvegarde la config dans un fichier)
+    paramètres:
+        le routeur à configurer
+        le graphe
+        le dictionnaire de config (il y a les ip dedans entre autres)
+        le numéro de l'as
+        la liste des process qui tournent (pour pouvoir append dedans)
+    retour:
+        None
+    
+    """
     protocole=graphe[numas]["protocole"] #récupérer le protocole ici
     router_id=config_noeuds[routeur]["router_id"]#récupérer le routeur_id ici
     #le graphe est le dico obtenu à partir du json
@@ -41,15 +65,19 @@ def config_routeur(routeur,graphe,config_noeuds,numas,process):
         raise
     commande+=bgp.config_bgp_routeur(routeur,graphe,router_id,config_noeuds)
     commande+=bgp.config_iBGP(routeur,graphe,router_id,config_noeuds,numas)
-    #commande+=loopback.generer_loopback_commandes(routeur,"ospf")
 
     
     port=config_noeuds[routeur]["json_gns3"].console
 
-    p=multiprocessing.Process(target=write_telnet_and_save,args=(port,commande,routeur))
+    p=multiprocessing.Process(target=write_telnet_and_save,args=(port,commande,routeur)) #on gagne énormément de temps ici
     p.start()
     process.append(p)
 if __name__=="__main__":
+    """
+    Programme principal, configure tous les routeurs du réseau quel qu'il soit pourvu qu'il corresponde a graphe fourni en entrée
+
+    """
+
     from gns3fy import Gns3Connector, Project
 
     import adresses as ad
