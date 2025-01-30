@@ -57,6 +57,22 @@ def attribue_ip(graphe,config_noeux):
 
 
 
+
+
+def get_reseaux_routeur(routeur,config_noeuds):
+    """
+    renvoie les adresses réseaux des réseaux auxquels est connecté un routeur
+    """
+    liste_reseaux=[]
+    connexions=config_noeuds[routeur]["ip_et_co"].values()
+    for interface,reseau in connexions:
+        index1=reseau.index("::")+2
+        index2=reseau.index("/")
+        reseau=reseau[:index1]+reseau[index2:] #on supprime le ou les caractère(s) qui correspond à l'adresse machine
+        liste_reseaux.append(reseau)
+    return liste_reseaux
+
+
 def main():
     config_noeux={}
     with open("gns/reseau_officiel.json") as fichier:

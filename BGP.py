@@ -1,6 +1,6 @@
 import json
 import ipaddress
-
+from adresses import get_reseaux_routeur
 def annonce_reseau(routeur_iteration,routeur_sur_lequel_on_applique,reseau,commandes):
 	if routeur_iteration==routeur_sur_lequel_on_applique:
 		commandes.append(f"network {reseau}")
@@ -10,8 +10,17 @@ def annonce_reseau(routeur_iteration,routeur_sur_lequel_on_applique,reseau,comma
 
 	pass
 
+def annonce_reseaux_routeur(routeur_iteration,routeur_sur_lequel_on_applique,commandes,config_noeuds):
+	if routeur_iteration==routeur_sur_lequel_on_applique:
+		reseaux=get_reseaux_routeur(routeur_sur_lequel_on_applique,config_noeuds)
+		for reseau in reseaux:
+			commandes.append(f"network {reseau}")
 
-def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voisin):
+		pass
+
+
+
+def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voisin,policy,config_noeuds):
 	"""
 	router : string
 	voisin du routeur : string
@@ -41,7 +50,7 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voi
 		commandes.append(f"neighbor {ipv6_noprefix} activate")
 	else: 
 		exi=False
-		#on ignore, quand ça ne correspond à aucun des cas si dessus (on ne veut pas établir iBGP sur les interfaces)
+		#on ignore, quand ça ne correspond à aucun des cas ci-dessus (on ne veut pas établir iBGP sur les interfaces)
 	
 
 	# Créer un objet IPv6Network
@@ -51,11 +60,15 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voi
 	adresse_reseau = str(network.network_address)
 	prefixe = network.prefixlen
 	if exi:
-		annonce_reseau(routeur,"R1","2001:1:1::/64",commandes) #on annonce seulement les réseau spécifié
-		annonce_reseau(routeur,"R1","2001:1:2::/64",commandes) #on veut annoncer les 2 réseaux de R1 et R11 comme ça on n'a pas de comportement étrange
-		annonce_reseau(routeur,"R11","2001:2:31::/64",commandes)
-		annonce_reseau(routeur,"R11","2001:2:34::/64",commandes)
-
+		if not policy: # sur le réseau que l'on nous a donné, le changer changeait l'attribution d'IPs
+			annonce_reseau(routeur,"R1","2001:1:1::/64",commandes) #on annonce seulement les réseau spécifié
+			annonce_reseau(routeur,"R1","2001:1:2::/64",commandes) #on veut annoncer les 2 réseaux de R1 et R11 comme ça on n'a pas de comportement étrange
+			annonce_reseau(routeur,"R11","2001:2:31::/64",commandes)
+			annonce_reseau(routeur,"R11","2001:2:34::/64",commandes)
+		else:
+			annonce_reseaux_routeur(routeur,"R1",commandes,config_noeuds) #on annonce ces réseaux
+			annonce_reseaux_routeur(routeur,"R11",commandes,config_noeuds)
+			pass
 		
 		commandes.append("exit") #problème ici certainement
 		commandes.append("exit")
@@ -89,10 +102,10 @@ def get_as_for_router(routeur, data):
     return None  # Retourne None si le routeur n'est pas trouvé
 
 
-def spread_loopback_iBGP(voisin,routeur,reseau_officiel,router_id,address_ipv6,adresse_voisin):#ici l'adresse voisin est bien sa @loop_voisin!
+def spread_loopback_iBGP(voisin,routeur,reseau_officiel,router_id,address_ipv6,adresse_voisin,policy,config_noeuds):#ici l'adresse voisin est bien sa @loop_voisin!
 	commandes=["conf t"]
 	if sameAS(routeur,voisin,reseau_officiel): #si c'est dans meme AS on spread @loopback
-		commandes.extend(config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,adresse_voisin))
+		commandes.extend(config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,adresse_voisin,policy,config_noeuds))
 		commandes.append("exit")
 		commandes+=["configure termi",f"router bgp {get_as_for_router(routeur,reseau_officiel)}",f"neighbor {adresse_voisin} remote-as {get_as_for_router(routeur,reseau_officiel)}",f"neighbor {adresse_voisin} update-source Loopback0","exit","exit"]
 	return commandes
@@ -104,7 +117,7 @@ def config_bgp_routeur(routeur, reseau_officiel,routeur_iden,config_noeud,policy
 	commandes = ["conf t"]
 	for voisin,liste in dico_voisins.items():
 		ip_voisin=config_noeud[voisin]["ip_et_co"][routeur][1] #on récupère l'ip du voisin connecté à notre routeur
-		commandes.extend(config_bgp(routeur,voisin,reseau_officiel,routeur_iden, liste[1],ip_voisin))
+		commandes.extend(config_bgp(routeur,voisin,reseau_officiel,routeur_iden, liste[1],ip_voisin,policy,config_noeud))
 		if policy:
 			commandes.extend(policies(routeur, voisin, reseau_officiel, ip_voisin))
 	
@@ -152,14 +165,14 @@ def policies(routeur, voisin, data, address_ipv6_neighbor):
 	
 	return commandes 
 
-def config_iBGP(routeur,reseau_officiel,router_id,config_noeud,numas):
+def config_iBGP(routeur,reseau_officiel,router_id,config_noeud,numas,policy):
 	adresse_self=config_noeud[routeur]["loopback"]
 	voisins=reseau_officiel[numas]["routeurs"] #les voisins iBGP sont les mêmes routeurs du réseau
 	commandes=[]
 	for voisin in voisins.keys():
 		if routeur != voisin: #on ne veut pas configurer le routeur lui-même comme voisin
 			adresse_voisin=config_noeud[voisin]["loopback"]
-			commandes+=spread_loopback_iBGP(voisin,routeur,reseau_officiel,router_id,adresse_self,adresse_voisin)
+			commandes+=spread_loopback_iBGP(voisin,routeur,reseau_officiel,router_id,adresse_self,adresse_voisin,policy,config_noeud)
 	return commandes
 
 def test():
