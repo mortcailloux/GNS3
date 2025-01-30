@@ -67,7 +67,7 @@ def configure_router_telnet(ip, port, commands):
         output=""
         while True:
             # Lire une partie de la sortie
-            chunk = tn.read_until(b"--More--", timeout=10).decode('ascii')
+            chunk = tn.read_until(b"--More--", timeout=20).decode('ascii')
             output += chunk.replace("--More--", "")
             
             # Vérifier si la sortie est terminée

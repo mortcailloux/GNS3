@@ -104,7 +104,7 @@
         "routeurs":{
             "R15":{
                 "FastEthernet0/0":["R11",0],
-                "Gigabit_Ethernet1/0":["R1",0]
+                "GigabitEthernet1/0":["R1",0]
             }
         },
         "relation":{
@@ -120,7 +120,7 @@
         "routeurs":{
             "R16":{
                 "FastEthernet0/0":["R14",0],
-                "Gigabit_Ethernet1/0":["R17",0]
+                "GigabitEthernet1/0":["R17",0]
             }
         },
         "relation":{
@@ -135,7 +135,7 @@
         "routeurs":{
             "R17":{
                 "FastEthernet0/0":["R7",0],
-                "Gigabit_Ethernet1/0":["R16",0]
+                "GigabitEthernet1/0":["R16",0]
             }
         },
         "relation":{

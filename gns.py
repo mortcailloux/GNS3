@@ -63,7 +63,7 @@ def config_routeur(routeur,graphe,config_noeuds,numas,process,policy):
     else:
         print("protocole non reconnu")
         raise
-    commande+=bgp.config_bgp_routeur(routeur,graphe,router_id,config_noeuds)
+    commande+=bgp.config_bgp_routeur(routeur,graphe,router_id,config_noeuds,policy)
     commande+=bgp.config_iBGP(routeur,graphe,router_id,config_noeuds,numas)
 
     
