@@ -57,8 +57,8 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voi
 		annonce_reseau(routeur,"R11","2001:2:34::/64",commandes)
 
 		
-		commandes.append("exit") #problème ici certainement
-		commandes.append("exit")
+		#commandes.append("exit") #problème ici certainement
+		#commandes.append("exit")
 	return commandes
 		
 
@@ -105,6 +105,7 @@ def config_bgp_routeur(routeur, reseau_officiel,routeur_iden,config_noeud):
 	for voisin,liste in dico_voisins.items():
 		ip_voisin=config_noeud[voisin]["ip_et_co"][routeur][1] #on récupère l'ip du voisin connecté à notre routeur
 		commandes.extend(config_bgp(routeur,voisin,reseau_officiel,routeur_iden, liste[1],ip_voisin))
+		commandes.extend(policies(routeur, voisin, reseau_officiel, ip_voisin))
 	
 	commandes.append("exit")
 	return commandes
@@ -116,19 +117,19 @@ def get_relation(as_number_to_config, as_number_neighbor, data):
 		if as_number_neighbor in as_list:
 			return type
 
-def policies(routeur, voisin, data, address_ipv6): 
+def policies(routeur, voisin, data, address_ipv6_neighbor): 
 	commandes = []
 	as_number = get_as_for_router(routeur, data)
 	as_voisin = get_as_for_router(voisin, data)
 	relation = get_relation(as_number, as_voisin, data)
 	if relation == 'provider':
 		commandes.append(f"neighbor {voisin} route-map PROVIDER in")
-		commandes.append(f"neighbor {address_ipv6} route-map CUSTOMERS_ONLY out")
+		commandes.append(f"neighbor {address_ipv6_neighbor} route-map CUSTOMERS_ONLY out")
 	elif relation == 'peer':
-		commandes.append(f"neighbor {address_ipv6} route-map PEER in")
-		commandes.append(f"neighbor {address_ipv6} route-map CUSTOMERS_ONLY out")
+		commandes.append(f"neighbor {address_ipv6_neighbor} route-map PEER in")
+		commandes.append(f"neighbor {address_ipv6_neighbor} route-map CUSTOMERS_ONLY out")
 	else:
-		commandes.append(f"neighbor {address_ipv6} route-map CUSTOMER in")
+		commandes.append(f"neighbor {address_ipv6_neighbor} route-map CUSTOMER in")
 
 	commandes.append("exit")
 	commandes.append("exit")
