@@ -36,7 +36,7 @@ def reinitialiser_routeur(routeur):
     telnet.reinitialise_router_telnet("127.0.0.1",port)
     
 
-def config_routeur(routeur,graphe,config_noeuds,numas,process):
+def config_routeur(routeur,graphe,config_noeuds,numas,process,policy):
     """
     
     configure un seul routeur (génère les commands puis crée un process qui écrie sur le routeur et sauvegarde la config dans un fichier)
@@ -88,13 +88,17 @@ if __name__=="__main__":
     import telnet
     import loopback as lb
     import json #on ne veut pas tout importer dans chaque process (ça prend beaucoup de temps)
-
-    with open("gns/reseau_officiel.json") as fichier:
-        graphe=json.load(fichier)
+    policy=input("voulez vous voir le comportement des policies ? (oui/non)").lower()=="oui"
+    if policy:
+        with open("gns/reseau_officiel_policies.json") as fichier:
+            graphe=json.load(fichier)
+    else:
+        with open("gns/reseau_officiel.json") as fichier:
+            graphe=json.load(fichier)
 
     GNS3_SERVER = "http://127.0.0.1:3080"
     PROJECT_NAME = input("quel est le nom de votre projet ? (sensible à la casse)")
-    policy=input("voulez vous voir le comportement des policies ? (oui/non)")=="oui"
+    
     # Connexion au serveur GNS3
     connector = Gns3Connector(GNS3_SERVER)
 
@@ -120,7 +124,7 @@ if __name__=="__main__":
     
     for numas in graphe.keys():
         for routeur in graphe[numas]["routeurs"].keys():
-            config_routeur(routeur,graphe,config_noeuds,numas,process) #on configure tous les routeurs
+            config_routeur(routeur,graphe,config_noeuds,numas,process,policy) #on configure tous les routeurs
     for p in process:
         p.join()
 
