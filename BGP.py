@@ -2,6 +2,9 @@ import json
 import ipaddress
 from adresses import get_reseaux_routeur
 def annonce_reseau(routeur_iteration,routeur_sur_lequel_on_applique,reseau,commandes):
+	"""
+	très similaire à la fonction en dessous mais n'annonce que le réseau mis en paramètre
+	"""
 	if routeur_iteration==routeur_sur_lequel_on_applique:
 		commandes.append(f"network {reseau}")
 
@@ -11,6 +14,13 @@ def annonce_reseau(routeur_iteration,routeur_sur_lequel_on_applique,reseau,comma
 	pass
 
 def annonce_reseaux_routeur(routeur_iteration,routeur_sur_lequel_on_applique,commandes,config_noeuds):
+	"""
+	annnonce tous les réseaux auxquels est connecté le routeur considéré:
+	routeur_iteration: le routeur auquel on est à l'itération donnée (on ne veut pas forcément le configurer, on veut configurer le 2e routeur)
+	le nom est explicite là
+	commandes: la liste des commandes à laquelle on va append
+	config_noeuds: voir plus bas si nécessaire pour comprendre
+	"""
 	if routeur_iteration==routeur_sur_lequel_on_applique:
 		reseaux=get_reseaux_routeur(routeur_sur_lequel_on_applique,config_noeuds)
 		for reseau in reseaux:
@@ -103,6 +113,15 @@ def get_as_for_router(routeur, data):
 
 
 def spread_loopback_iBGP(voisin,routeur,reseau_officiel,router_id,address_ipv6,adresse_voisin,policy,config_noeuds):#ici l'adresse voisin est bien sa @loop_voisin!
+	"""
+	configure l'iBGP pour les routeurs voisins du même AS
+	voisin: routeur voisin
+	routeur: routeur que l'on configure
+	router_id: X.X.X.X 
+	le reste est assez explicite
+	policy: booléen: True si on utilise le graphe des policies
+	config_noeuds: dictionnaire de configuration qui contient les ip et nom d'interfaces
+	"""
 	commandes=["conf t"]
 	if sameAS(routeur,voisin,reseau_officiel): #si c'est dans meme AS on spread @loopback
 		commandes.extend(config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,adresse_voisin,policy,config_noeuds))
@@ -111,7 +130,13 @@ def spread_loopback_iBGP(voisin,routeur,reseau_officiel,router_id,address_ipv6,a
 	return commandes
 
 def config_bgp_routeur(routeur, reseau_officiel,routeur_iden,config_noeud,policy):
-    
+	"""
+	génère les commandes BGP pour configurer un routeur:
+	routeur: le routeur que l'on configure
+	reseau_officiel: graphe du réeau (fichier d'intention)
+	routeur_iden: id du routeur (pk en ?)
+	condig_noeud: le dictionnaire qui contient les infos de config, ip entre autres
+	"""
 	dico_voisins = config_noeud[routeur]["ip_et_co"]
 	
 	commandes = ["conf t"]
@@ -125,6 +150,11 @@ def config_bgp_routeur(routeur, reseau_officiel,routeur_iden,config_noeud,policy
 	return commandes
 
 def get_relation(as_number_to_config, as_number_neighbor, data):
+	"""
+	permet de récupérer les relations type clients/peers/providers depuis le graphe data (fichier d'intention, jsp pourquoi il change de nom à chaque fonction)
+	as_number_to_config: le num de l'AS du routeur que l'on est en train de configurer
+	as_number_neighbor: le num de l'AS du routeur voisin pour lequel on veut établir les route maps
+	"""
 	as_number_to_config = str(as_number_to_config)
 	as_number_neighbor=str(as_number_neighbor) #le test ne fnctionnait pas dans la liste, c'était un string
 	relations = data[as_number_to_config].get('relation', {}) #la clé s'appelle relation pas relations
@@ -132,7 +162,13 @@ def get_relation(as_number_to_config, as_number_neighbor, data):
 		if as_number_neighbor in as_list:
 			return type
 
-def policies(routeur, voisin, data, address_ipv6_neighbor): 
+def policies(routeur, voisin, data, address_ipv6_neighbor):
+	"""
+	Crée les commandes de policies pour un routeur donné, un routeur voisin donné,
+	data: graphe (fichier d'intention)
+	le dernier paramètre est assez explicite
+	
+	""" 
 	as_number = get_as_for_router(routeur, data)
 	as_voisin = get_as_for_router(voisin, data)
 	commandes = [f"router bgp {as_number}", "address-family ipv6 unicast"]
@@ -169,6 +205,14 @@ def policies(routeur, voisin, data, address_ipv6_neighbor):
 	return commandes 
 
 def config_iBGP(routeur,reseau_officiel,router_id,config_noeud,numas,policy):
+	"""
+	configure iBGP pour un routeur donné,
+	reseau_officiel: fichier d'intention
+	config_noeud: contient plusieurs données de config dont les adresses ip notemment
+	numas: le numéro de l'as,
+	router_id: l'id du routeur X.X.X.X
+	policy: booléen: si on applique les policies (pour que ça fonctionne même avec le réseau de départ)
+	"""
 	adresse_self=config_noeud[routeur]["loopback"]
 	voisins=reseau_officiel[numas]["routeurs"] #les voisins iBGP sont les mêmes routeurs du réseau
 	commandes=[]

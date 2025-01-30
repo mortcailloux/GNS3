@@ -1,3 +1,8 @@
+"""
+module qui servait à générer intégralement une liste d'adjacence de réseau de façon aléatoire
+abandonné
+"""
+
 import datetime
 import json
 from random import randint

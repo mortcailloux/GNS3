@@ -1,4 +1,6 @@
-
+"""
+programme principal, sert à configurer intégralement le réseau sur gns3 à l'aide des autres modules du programme
+"""
 
 import write_config as wc
 import multiprocessing
@@ -54,7 +56,7 @@ def config_routeur(routeur,graphe,config_noeuds,numas,process,policy):
     router_id=config_noeuds[routeur]["router_id"]#récupérer le routeur_id ici
     #le graphe est le dico obtenu à partir du json
     commande=ad.genere_commandes_ip(config_noeuds,routeur)
-    commande+=lb.generer_loopback_commandes(routeur,protocole,5,config_noeuds)
+    commande+=lb.generer_loopback_commandes(routeur,config_noeuds)
     #mettre bgp après ospf/rip (il faut avoir configuré le routage ipv6#)
     if protocole.lower()=="ospf":
         commande+=ospf.config_ospf(router_id,routeur,5,graphe,numas,1) 

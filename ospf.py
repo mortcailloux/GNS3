@@ -1,4 +1,7 @@
-import json
+"""
+module qui sert à générer les commandes pour ospf sur les routeurs
+"""
+
 
 def config_ospf(router_id,router_name, process_id, graphe,numAs, cost=0):
     """

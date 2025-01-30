@@ -1,6 +1,9 @@
-import json
+"""
+module qui sert à générer les commandes qui configurent rip sur le routeur
+"""
 
-def config_ripng(routeur,interface):
+
+def config_ripng(interface):
     """
     configuration de RIP sur routeur(string) relié à voisins(liste)
     à partir du fichier JSON reseau_officiel.json
@@ -20,17 +23,27 @@ def config_ripng(routeur,interface):
 		# else:
 		# 	interface = f"GigabitEthernet{i}/0"
 def config_rip_routeur(routeur,reseau_officiel,numAs):
+    """configure toutes les interfaces d'un routeur donné
+    routeur: routeur considéré
+    reseau_officiel: graphe du réseau (fichier d'intention)
+    numAs: numéro de l'AS du routeur
+    """
     dico_voisins = reseau_officiel[numAs]["routeurs"][routeur]
     commandes = []
     for interface in dico_voisins.keys():
-        commandes.extend(config_ripng(routeur,interface))
-    commandes.extend(config_ripng(routeur,"Loopback0"))
+        commandes.extend(config_ripng(interface))
+    commandes.extend(config_ripng("Loopback0"))
     return commandes
 
 def test():
+    """
+    outdated mais a servi à tester les fonctions précédemments
+    """
     with open("reseau_officiel.json") as fichier:
         reseau_officiel=json.load(fichier)
     print(rip_voisins("R3",reseau_officiel))
 
 if __name__=="__main__":
+    import json
+
     test()

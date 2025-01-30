@@ -1,5 +1,6 @@
-import json
-
+"""
+module qui sert à générer les ips sur les interfaces de chaque routeur (pas la loopback par contre, autre module)
+"""
 
 
 def genere_ip_reseau(numreseau,nbrouteur,numass=168):
@@ -98,6 +99,8 @@ def genere_commandes_ip(config_noeuds,noeud):
 
 
 if __name__=="__main__":
+    import json
+
 
     main()
 

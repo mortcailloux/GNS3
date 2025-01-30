@@ -1,3 +1,8 @@
+"""
+Module qui sert à écrire la config dans un fichier .cgf
+"""
+
+
 def clean_control_chars(text: str) -> str:
     """
     Nettoie les caractères de contrôle et les espaces superflus

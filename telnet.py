@@ -1,5 +1,8 @@
+"""
+module qui sert à écrire nos commandes sur le routeur via telnet
+"""
+
 import telnetlib
-import time
 
 def reinitialise_router_telnet(ip,port):
     """

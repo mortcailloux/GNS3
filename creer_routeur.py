@@ -1,3 +1,7 @@
+"""
+module qui servait à créer un routeur sur gns3, abandonné
+"""
+
 import requests
 from random import randint
 GNS3_SERVER = "http://127.0.0.1:3080"
