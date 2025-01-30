@@ -126,7 +126,8 @@ def config_bgp_routeur(routeur, reseau_officiel,routeur_iden,config_noeud,policy
 
 def get_relation(as_number_to_config, as_number_neighbor, data):
 	as_number_to_config = str(as_number_to_config)
-	relations = data[as_number_to_config].get('relations', {})
+	as_number_neighbor=str(as_number_neighbor) #le test ne fnctionnait pas dans la liste, c'était un string
+	relations = data[as_number_to_config].get('relation', {}) #la clé s'appelle relation pas relations
 	for type, as_list in relations.items():
 		if as_number_neighbor in as_list:
 			return type
@@ -140,7 +141,7 @@ def policies(routeur, voisin, data, address_ipv6_neighbor):
 	if as_number != as_voisin:
 		relation = get_relation(as_number, as_voisin, data)
 		if relation == 'provider':
-			commandes.append(f"neighbor {voisin} route-map PROVIDER in")
+			commandes.append(f"neighbor {address_ipv6_neighbor} route-map PROVIDER in") #pas sûr de mon changement
 			commandes.append(f"neighbor {address_ipv6_neighbor} route-map CUSTOMERS_ONLY out")
 		elif relation == 'peer':
 			commandes.append(f"neighbor {address_ipv6_neighbor} route-map PEER in")
