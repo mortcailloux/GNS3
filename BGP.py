@@ -35,7 +35,7 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voi
 	voisin_as = get_as_for_router(voisin, reseau_officiel)
 	# Créer un objet IPv6Network
 	if "/" in address_voisin:
-		ipv6_noprefix = address_voisin[:-3] #sans prefixe, ici ça ne fonctionne pas, pas d'attribut ip
+		ipv6_noprefix = address_voisin[:address_voisin.index("/")] #sans prefixe, ici ça ne fonctionne pas, pas d'attribut ip
 	else:
 		ipv6_noprefix=address_voisin
 	memeAs=sameAS(routeur,voisin,reseau_officiel)
@@ -134,7 +134,9 @@ def get_relation(as_number_to_config, as_number_neighbor, data):
 def policies(routeur, voisin, data, address_ipv6_neighbor): 
 	as_number = get_as_for_router(routeur, data)
 	as_voisin = get_as_for_router(voisin, data)
-	commandes = [f"router bgp {as_number}", "address-family ipv6 unicast"] 
+	commandes = [f"router bgp {as_number}", "address-family ipv6 unicast"]
+	if "/" in address_ipv6_neighbor:
+		address_ipv6_neighbor = address_ipv6_neighbor[:address_ipv6_neighbor.index("/")] 
 	if as_number != as_voisin:
 		relation = get_relation(as_number, as_voisin, data)
 		if relation == 'provider':
