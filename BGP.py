@@ -97,7 +97,7 @@ def spread_loopback_iBGP(voisin,routeur,reseau_officiel,router_id,address_ipv6,a
 		commandes+=["configure termi",f"router bgp {get_as_for_router(routeur,reseau_officiel)}",f"neighbor {adresse_voisin} remote-as {get_as_for_router(routeur,reseau_officiel)}",f"neighbor {adresse_voisin} update-source Loopback0","exit","exit"]
 	return commandes
 
-def config_bgp_routeur(routeur, reseau_officiel,routeur_iden,config_noeud):
+def config_bgp_routeur(routeur, reseau_officiel,routeur_iden,config_noeud,policy):
     
 	dico_voisins = config_noeud[routeur]["ip_et_co"]
 	
@@ -105,7 +105,8 @@ def config_bgp_routeur(routeur, reseau_officiel,routeur_iden,config_noeud):
 	for voisin,liste in dico_voisins.items():
 		ip_voisin=config_noeud[voisin]["ip_et_co"][routeur][1] #on récupère l'ip du voisin connecté à notre routeur
 		commandes.extend(config_bgp(routeur,voisin,reseau_officiel,routeur_iden, liste[1],ip_voisin))
-		commandes.extend(policies(routeur, voisin, reseau_officiel, ip_voisin))
+		if policy:
+			commandes.extend(policies(routeur, voisin, reseau_officiel, ip_voisin))
 	
 	commandes.append("exit")
 	return commandes
