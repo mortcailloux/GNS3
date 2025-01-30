@@ -1,0 +1,148 @@
+{
+	"1": {
+		"protocole": "RIP",
+		"routeurs": {
+"R1": {
+				"FastEthernet0/0": ["R2", 0],
+				"GigabitEthernet1/0": ["R5", 0],
+                "GigabitEthernet2/0": ["R15", 0]
+                
+			},
+			"R2": {
+				"FastEthernet0/0": ["R1", 0],
+				"GigabitEthernet1/0": ["R3", 0],
+				"GigabitEthernet2/0": ["R5", 0]
+			},
+			"R3": {
+				"FastEthernet0/0": ["R2", 0],
+				"GigabitEthernet1/0": ["R4", 0],
+				"GigabitEthernet2/0": ["R6", 0],
+				"GigabitEthernet3/0": ["R7", 0]
+			},
+			"R4": {
+				"FastEthernet0/0": ["R3", 0],
+				"GigabitEthernet1/0": ["R6", 0],
+				"GigabitEthernet2/0": ["R8", 0]
+			},
+			"R5": {
+				"FastEthernet0/0": ["R1", 0],
+				"GigabitEthernet1/0": ["R2", 0],
+				"GigabitEthernet2/0": ["R6", 0]
+			},
+			"R6": {
+				"FastEthernet0/0": ["R3", 0],
+				"GigabitEthernet1/0": ["R4", 0],
+				"GigabitEthernet2/0": ["R5", 0],
+				"GigabitEthernet3/0": ["R7", 0]
+			},
+			"R7": {
+				"GigabitEthernet1/0": ["R3", 0],
+				"GigabitEthernet2/0": ["R6", 0],
+				"GigabitEthernet3/0": ["R14", 0],
+                "FastEthernet0/0": ["R17", 0]
+			}
+
+		},
+		"relation": {
+			"provider": ["3"],
+			"peer": ["2"],
+			"customer": ["5"]
+		}
+	},
+
+	"2": {
+		"protocole": "OSPF",
+		"routeurs": {
+			"R8": {
+				"FastEthernet0/0": ["R4", 0],
+				"GigabitEthernet1/0": ["R9", 0],
+				"GigabitEthernet2/0": ["R13", 0]
+			},
+			"R9": {
+				"FastEthernet0/0": ["R8", 0],
+				"GigabitEthernet1/0": ["R10", 0],
+				"GigabitEthernet2/0": ["R13", 0],
+				"GigabitEthernet3/0": ["R14", 0]
+			},
+			"R10": {
+				"FastEthernet0/0": ["R9", 0],
+				"GigabitEthernet1/0": ["R11", 0],
+				"GigabitEthernet2/0": ["R12", 0]
+			},
+			"R11": {
+				"FastEthernet0/0": ["R10", 0],
+				"GigabitEthernet1/0": ["R12", 0],
+                "GigabitEthernet2/0": ["R15", 0]
+			},
+			"R12": {
+				"FastEthernet0/0": ["R10", 0],
+				"GigabitEthernet1/0": ["R11", 0],
+				"GigabitEthernet2/0": ["R13", 0]
+			},
+			"R13": {
+				"FastEthernet0/0": ["R8", 0],
+				"GigabitEthernet1/0": ["R9", 0],
+				"GigabitEthernet2/0": ["R12", 0],
+				"GigabitEthernet3/0": ["R14", 0]
+			},
+			"R14":{
+				"FastEthernet0/0": ["R7", 0],
+				"GigabitEthernet1/0": ["R9", 0],
+				"GigabitEthernet2/0": ["R13", 0],
+                "GigabitEthernet3/0": ["R16", 0]
+                
+			}
+		},
+		"relation": {
+			"provider": ["3"],
+			"peer": ["1"],
+			"customer": ["4"]
+		}
+	},
+    "3":{
+        "protocole":"RIP",
+        "routeurs":{
+            "R15":{
+                "FastEthernet0/0":["R11",0],
+                "Gigabit_Ethernet1/0":["R1",0]
+            }
+        },
+        "relation":{
+            "provider":[],
+             "peer":[]   ,
+             "customer":["1","2"]
+            
+        }
+
+    },
+    "4":{
+        "protocole":"RIP",
+        "routeurs":{
+            "R16":{
+                "FastEthernet0/0":["R14",0],
+                "Gigabit_Ethernet1/0":["R17",0]
+            }
+        },
+        "relation":{
+            "provider":["2"],
+            "peer":["5"],
+            "customer":[]
+        }
+
+    },
+    "5":{
+        "protocole":"RIP",
+        "routeurs":{
+            "R17":{
+                "FastEthernet0/0":["R7",0],
+                "Gigabit_Ethernet1/0":["R16",0]
+            }
+        },
+        "relation":{
+            "provider":["1"],
+            "peer":["4"],
+            "customer":[]
+        }   
+    }
+
+}

@@ -94,7 +94,7 @@ if __name__=="__main__":
 
     GNS3_SERVER = "http://127.0.0.1:3080"
     PROJECT_NAME = input("quel est le nom de votre projet ? (sensible à la casse)")
-    
+    policy=input("voulez vous voir le comportement des policies ? (oui/non)")=="oui"
     # Connexion au serveur GNS3
     connector = Gns3Connector(GNS3_SERVER)
 
