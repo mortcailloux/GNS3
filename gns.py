@@ -89,7 +89,7 @@ if __name__=="__main__":
     import loopback as lb
     import json #on ne veut pas tout importer dans chaque process (ça prend beaucoup de temps)
 
-    with open("gns/reseau_officiel.json") as fichier:
+    with open("reseau_officiel.json") as fichier:
         graphe=json.load(fichier)
 
     GNS3_SERVER = "http://127.0.0.1:3080"

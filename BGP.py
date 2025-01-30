@@ -57,8 +57,8 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voi
 		annonce_reseau(routeur,"R11","2001:2:34::/64",commandes)
 
 		
-		#commandes.append("exit") #problème ici certainement
-		#commandes.append("exit")
+		commandes.append("exit") #problème ici certainement
+		commandes.append("exit")
 	return commandes
 		
 
@@ -118,27 +118,28 @@ def get_relation(as_number_to_config, as_number_neighbor, data):
 			return type
 
 def policies(routeur, voisin, data, address_ipv6_neighbor): 
-	commandes = []
 	as_number = get_as_for_router(routeur, data)
 	as_voisin = get_as_for_router(voisin, data)
-	relation = get_relation(as_number, as_voisin, data)
-	if relation == 'provider':
-		commandes.append(f"neighbor {voisin} route-map PROVIDER in")
-		commandes.append(f"neighbor {address_ipv6_neighbor} route-map CUSTOMERS_ONLY out")
-	elif relation == 'peer':
-		commandes.append(f"neighbor {address_ipv6_neighbor} route-map PEER in")
-		commandes.append(f"neighbor {address_ipv6_neighbor} route-map CUSTOMERS_ONLY out")
-	else:
-		commandes.append(f"neighbor {address_ipv6_neighbor} route-map CUSTOMER in")
+	commandes = [f"router bgp {as_number}", "address-family ipv6 unicast"] 
+	if as_number != as_voisin:
+		relation = get_relation(as_number, as_voisin, data)
+		if relation == 'provider':
+			commandes.append(f"neighbor {voisin} route-map PROVIDER in")
+			commandes.append(f"neighbor {address_ipv6_neighbor} route-map CUSTOMERS_ONLY out")
+		elif relation == 'peer':
+			commandes.append(f"neighbor {address_ipv6_neighbor} route-map PEER in")
+			commandes.append(f"neighbor {address_ipv6_neighbor} route-map CUSTOMERS_ONLY out")
+		else:
+			commandes.append(f"neighbor {address_ipv6_neighbor} route-map CUSTOMER in")
 
-	commandes.append("exit")
-	commandes.append("exit")
+		commandes.append("exit")
+		commandes.append("exit")
 
-	for name, value, tag in (("CUSTOMER", "200", f"{as_number}:200"), ("PEER", "150", f"{as_number}:150"), ("PROVIDER", "100", f"{as_number}:100")):
-		commandes.append(f"route-map {name} permit 10")
-		commandes.append(f"set local-preference {value}")
-		commandes.append(f"set community {tag} additive")
-	
+		for name, value, tag in (("CUSTOMER", "200", f"{as_number}:200"), ("PEER", "150", f"{as_number}:150"), ("PROVIDER", "100", f"{as_number}:100")):
+			commandes.append(f"route-map {name} permit 10")
+			commandes.append(f"set local-preference {value}")
+			commandes.append(f"set community {tag} additive")
+		
 		commandes.append(f"ip community-list standard BLOCK permit {as_number}:100")
 		commandes.append(f"ip community-list standard BLOCK permit {as_number}:150")
 		commandes.append("route-map CUSTOMERS_ONLY deny 10")
@@ -147,7 +148,7 @@ def policies(routeur, voisin, data, address_ipv6_neighbor):
 		commandes.append("route-map CUSTOMERS_ONLY permit 20")
 		commandes.append("exit")
 	
-	return commandes
+	return commandes 
 
 def config_iBGP(routeur,reseau_officiel,router_id,config_noeud,numas):
 	adresse_self=config_noeud[routeur]["loopback"]
