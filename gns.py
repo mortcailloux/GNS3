@@ -90,10 +90,10 @@ if __name__=="__main__":
     import json #on ne veut pas tout importer dans chaque process (ça prend beaucoup de temps)
     policy=input("voulez vous voir le comportement des policies ? (oui/non)").lower()=="oui"
     if policy:
-        with open("gns/reseau_officiel_policies.json") as fichier:
+        with open("reseau_officiel_policies.json") as fichier:
             graphe=json.load(fichier)
     else:
-        with open("gns/reseau_officiel.json") as fichier:
+        with open("reseau_officiel.json") as fichier:
             graphe=json.load(fichier)
 
     GNS3_SERVER = "http://127.0.0.1:3080"

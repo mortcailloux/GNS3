@@ -139,7 +139,8 @@ def policies(routeur, voisin, data, address_ipv6_neighbor):
 			commandes.append(f"route-map {name} permit 10")
 			commandes.append(f"set local-preference {value}")
 			commandes.append(f"set community {tag} additive")
-		
+
+		commandes.append("exit")
 		commandes.append(f"ip community-list standard BLOCK permit {as_number}:100")
 		commandes.append(f"ip community-list standard BLOCK permit {as_number}:150")
 		commandes.append("route-map CUSTOMERS_ONLY deny 10")
