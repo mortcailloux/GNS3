@@ -78,6 +78,9 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voi
 		else:
 			annonce_reseaux_routeur(routeur,"R1",commandes,config_noeuds) #on annonce ces réseaux
 			annonce_reseaux_routeur(routeur,"R11",commandes,config_noeuds)
+			annonce_reseaux_routeur(routeur,"R15", commandes, config_noeuds)
+			annonce_reseaux_routeur(routeur,"R16", commandes, config_noeuds)
+			annonce_reseaux_routeur(routeur,"R17", commandes, config_noeuds)
 			pass
 		
 		commandes.append("exit") #problème ici certainement
