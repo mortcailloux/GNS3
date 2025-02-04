@@ -8,7 +8,7 @@ Le projet est structuré en plusieurs modules dont la description est donnée ci
 - [RIP.py](https://github.com/mortcailloux/GNS3/blob/main/RIP.py): génère les commandes relatives à RIP pour la configuration des routeurs.
 - [adresses.py](https://github.com/mortcailloux/GNS3/blob/main/RIP.py): génère dynamiquement les adresses ip des interfaces puis génère les commandes de configuration relatives aux IP et aux interfaces pour la configuration des routeurs.
 - [exemple_desc_reseau.json](https://github.com/mortcailloux/GNS3/blob/main/exemple_desc_reseau.json): premiere ébauche de ce à quoi ressemblerait notre fichier d'intention, incomplet
-- [gns.py](https://github.com/mortcailloux/GNS3/blob/main/gns.py): permet de configurer tous les routeurs en combinant les modules.
+- [gns.py](https://github.com/mortcailloux/GNS3/blob/main/gns.py): permet de configurer tous les routeurs en combinant les modules. Lance telnet et l'écriture de config sur des process indépendants afin de pouvoir continuer à générer les commandes en parallèle.
 - [loopback.py](https://github.com/mortcailloux/GNS3/blob/main/loopback.py): permet de configurer les interfaces de loopback en générant les commandes correspondantes.
 - [ospf.py](https://github.com/mortcailloux/GNS3/blob/main/ospf.py): permet de générer les commandes nécessaires pour configurer OSPF sur les routeurs concernés.
 - [reseau_officiel.json](https://github.com/mortcailloux/GNS3/blob/main/reseau_officiel.json): fichier d'intention décrivant le réseau correspondant à la démo sans les policies.
@@ -27,3 +27,7 @@ Il suffit de lancer le script [gns.py](https://github.com/mortcailloux/GNS3/blob
 
 ## librairies utilisées:
 Le programme utilise telnetlib, gns3fy, multiprocessing et json. Il vous faudra installer la librairie correspondante s'il vous la manque.
+
+## structure du fichier d'intention:
+la première clé est le numéro de l'AS, ensuite on a le choix entre protocole (qui sert à récupérer le protocole utilisé dans l'as), routeurs (qui sert à savoir quels routeurs sont présents dans l'as) et relation qui permet d'établir les relations clients/peer/provider de cet as vers les autres as.
+Dans les routeurs, on retrouve un dictionnaire à chaque routeur dans lequel on retrouve les interfaces associés aux routeurs auxquelles elles sont connectées et le coût OSPF associé (ignoré dans RIP, on peut le modifier pour OSPF)
