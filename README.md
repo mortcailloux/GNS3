@@ -39,6 +39,9 @@ Dans les routeurs, on retrouve un dictionnaire à chaque routeur dans lequel on 
 - déploiement de BGP basic sur tous les AS via telnet
 - déploiement des policies BGP pour une gestion plus approfondie du trafic via telnet.
 - export des configurations des routeurs dans des fichiers.cfg
+- permet d'annoncer des réseaux précis dans BGP ou tous les réseaux d'un routeur spécifique dans BGP
+- prend également en charge du multiprocessing pour que les configurations soient calculées et envoyées au plus vite aux différents routeurs sur GNS3.
 
-Pour BGP, on prend en charge:
-jusqu'à 255 routeurs (on génère les routeurs id de façon dynamique) et on génère les adresses de loopback automatiquement.
+
+Pour BGP, on prend en charge jusqu'à 255 routeurs (on génère les routeurs id de façon dynamique) et on génère les adresses de loopback automatiquement.
+
