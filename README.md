@@ -23,11 +23,22 @@ Le projet est structuré en plusieurs modules dont la description est donnée ci
 
 
 ## Execution du programme:
-Il suffit de lancer le script [gns.py](https://github.com/mortcailloux/GNS3/blob/main/gns.py) en ayant gns3 de lancé, rentrez ensuite le nom de votre projet et le programme se charge du reste !
-
+Il suffit de lancer le script [gns.py](https://github.com/mortcailloux/GNS3/blob/main/gns.py) en ayant gns3 de lancé, rentrez ensuite le nom de votre projet qui correspond au graphe avec policies ou sans policies selon ce que vous choisissez puis choisissez le mode policies ou pas de policies (en rapport avec votre projet).
 ## librairies utilisées:
-Le programme utilise telnetlib, gns3fy, multiprocessing et json. Il vous faudra installer la librairie correspondante s'il vous la manque.
+Le programme utilise telnetlib, gns3fy, multiprocessing et json. Il vous faudra installer la librairie correspondante s'il vous la manque. Attention, telnetlib n'est plus disponible à partir de python 3.13
 
 ## structure du fichier d'intention:
 la première clé est le numéro de l'AS, ensuite on a le choix entre protocole (qui sert à récupérer le protocole utilisé dans l'as), routeurs (qui sert à savoir quels routeurs sont présents dans l'as) et relation qui permet d'établir les relations clients/peer/provider de cet as vers les autres as.
 Dans les routeurs, on retrouve un dictionnaire à chaque routeur dans lequel on retrouve les interfaces associés aux routeurs auxquelles elles sont connectées et le coût OSPF associé (ignoré dans RIP, on peut le modifier pour OSPF)
+
+
+# fonctionnalités prises en charge:
+- génération automatique d'IP et attribution des ips aux interfaces via telnet.
+- déploiement de RIP dans un AS via telnet
+- déploiement d'OSPF dans un AS via telnet
+- déploiement de BGP basic sur tous les AS via telnet
+- déploiement des policies BGP pour une gestion plus approfondie du trafic via telnet.
+- export des configurations des routeurs dans des fichiers.cfg
+
+Pour BGP, on prend en charge:
+jusqu'à 255 routeurs (on génère les routeurs id de façon dynamique) et on génère les adresses de loopback automatiquement.
