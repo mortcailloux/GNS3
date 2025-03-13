@@ -1,6 +1,7 @@
 {
 	"1": {
 		"protocole": "RIP",
+		"annonce_reseaux":["R1"],
 		"routeurs": {
 "R1": {
 				"FastEthernet0/0": ["R2", 0],
@@ -52,6 +53,7 @@
 
 	"2": {
 		"protocole": "OSPF",
+		"annonce_reseaux":["R11"],
 		"routeurs": {
 			"R8": {
 				"FastEthernet0/0": ["R4", 0],
@@ -101,6 +103,7 @@
 	},
     "3":{
         "protocole":"RIP",
+		"annonce_reseaux":["R15"],
         "routeurs":{
             "R15":{
                 "FastEthernet0/0":["R11",0],
@@ -117,6 +120,7 @@
     },
     "4":{
         "protocole":"RIP",
+		"annonce_reseaux":["R16"],
         "routeurs":{
             "R16":{
                 "FastEthernet0/0":["R14",0],
@@ -132,6 +136,7 @@
     },
     "5":{
         "protocole":"RIP",
+		"annonce_reseaux":["R17"],
         "routeurs":{
             "R17":{
                 "FastEthernet0/0":["R7",0],

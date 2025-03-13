@@ -13,7 +13,7 @@ def annonce_reseau(routeur_iteration,routeur_sur_lequel_on_applique,reseau,comma
 
 	pass
 
-def annonce_reseaux_routeur(routeur_iteration,routeur_sur_lequel_on_applique,commandes,config_noeuds):
+def annonce_reseaux_routeur(routeur_sur_lequel_on_applique,commandes,config_noeuds):
 	"""
 	annnonce tous les réseaux auxquels est connecté le routeur considéré:
 	routeur_iteration: le routeur auquel on est à l'itération donnée (on ne veut pas forcément le configurer, on veut configurer le 2e routeur)
@@ -21,12 +21,12 @@ def annonce_reseaux_routeur(routeur_iteration,routeur_sur_lequel_on_applique,com
 	commandes: la liste des commandes à laquelle on va append
 	config_noeuds: voir plus bas si nécessaire pour comprendre
 	"""
-	if routeur_iteration==routeur_sur_lequel_on_applique:
-		reseaux=get_reseaux_routeur(routeur_sur_lequel_on_applique,config_noeuds)
-		for reseau in reseaux:
-			commandes.append(f"network {reseau}")
+	
+	reseaux=get_reseaux_routeur(routeur_sur_lequel_on_applique,config_noeuds)
+	for reseau in reseaux:
+		commandes.append(f"network {reseau}")
 
-		pass
+		
 
 
 
@@ -70,18 +70,10 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voi
 	adresse_reseau = str(network.network_address)
 	prefixe = network.prefixlen
 	if exi:
-		if not policy: # sur le réseau que l'on nous a donné, le changer changeait l'attribution d'IPs
-			annonce_reseau(routeur,"R1","2001:1:1::/64",commandes) #on annonce seulement les réseau spécifié
-			annonce_reseau(routeur,"R1","2001:1:2::/64",commandes) #on veut annoncer les 2 réseaux de R1 et R11 comme ça on n'a pas de comportement étrange
-			annonce_reseau(routeur,"R11","2001:2:31::/64",commandes)
-			annonce_reseau(routeur,"R11","2001:2:34::/64",commandes)
-		else:
-			annonce_reseaux_routeur(routeur,"R1",commandes,config_noeuds) #on annonce ces réseaux
-			annonce_reseaux_routeur(routeur,"R11",commandes,config_noeuds)
-			annonce_reseaux_routeur(routeur,"R15", commandes, config_noeuds)
-			annonce_reseaux_routeur(routeur,"R16", commandes, config_noeuds)
-			annonce_reseaux_routeur(routeur,"R17", commandes, config_noeuds)
-			pass
+		if routeur in reseau_officiel[str(AS)]["annonce_reseaux"]:
+			annonce_reseaux_routeur(routeur,commandes,config_noeuds)
+
+		
 		
 		commandes.append("exit") #problème ici certainement
 		commandes.append("exit")

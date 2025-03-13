@@ -1,6 +1,7 @@
 {
 	"1": {
 		"protocole": "RIP",
+		"annonce_reseaux":["R1"],
 		"routeurs": {
 "R1": {
 				"FastEthernet0/0": ["R2", 0],
@@ -49,6 +50,7 @@
 
 	"2": {
 		"protocole": "OSPF",
+		"annonce_reseaux":["R11"],
 		"routeurs": {
 			"R8": {
 				"FastEthernet0/0": ["R4", 0],
